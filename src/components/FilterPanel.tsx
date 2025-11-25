@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { X } from '@phosphor-icons/react'
+import { CANADIAN_CITIES, SERVICE_CATEGORIES } from '@/lib/demo-data'
 
 export interface FilterState {
   category: string
@@ -19,34 +20,11 @@ interface FilterPanelProps {
   onClear: () => void
 }
 
-const categories = [
-  'All Services',
-  'Home Repair',
-  'Cleaning',
-  'Tutoring',
-  'Personal Training',
-  'Photography',
-  'Consulting',
-  'Design',
-  'Writing',
-]
-
-const locations = [
-  'All Locations',
-  'Paris',
-  'Lyon',
-  'Marseille',
-  'Toulouse',
-  'Nice',
-  'Nantes',
-  'Bordeaux',
-]
-
 export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelProps) {
   return (
     <Card className="p-6 h-fit sticky top-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Filters</h3>
+        <h3 className="font-semibold text-lg">Filtres</h3>
         <Button
           variant="ghost"
           size="sm"
@@ -54,13 +32,13 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
           className="h-8 px-2"
         >
           <X size={16} className="mr-1" />
-          Clear
+          Effacer
         </Button>
       </div>
 
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label>Category</Label>
+          <Label>Catégorie</Label>
           <Select 
             value={filters.category} 
             onValueChange={(value) => onFilterChange({ ...filters, category: value })}
@@ -69,7 +47,7 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((cat) => (
+              {SERVICE_CATEGORIES.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>
@@ -81,7 +59,7 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
         <Separator />
 
         <div className="space-y-2">
-          <Label>Location</Label>
+          <Label>Ville</Label>
           <Select 
             value={filters.location} 
             onValueChange={(value) => onFilterChange({ ...filters, location: value })}
@@ -90,7 +68,7 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((loc) => (
+              {CANADIAN_CITIES.map((loc) => (
                 <SelectItem key={loc} value={loc}>
                   {loc}
                 </SelectItem>
@@ -103,9 +81,9 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label>Price Range</Label>
+            <Label>Tarif horaire</Label>
             <span className="text-sm text-muted-foreground">
-              ${filters.priceRange[0]} - ${filters.priceRange[1]}
+              {filters.priceRange[0]}$ - {filters.priceRange[1]}$
             </span>
           </div>
           <Slider
@@ -124,9 +102,9 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label>Minimum Rating</Label>
+            <Label>Note minimum</Label>
             <span className="text-sm text-muted-foreground">
-              {filters.minRating}+ stars
+              {filters.minRating}+ étoiles
             </span>
           </div>
           <Slider

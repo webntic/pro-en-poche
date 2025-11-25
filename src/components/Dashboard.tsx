@@ -48,12 +48,23 @@ export function Dashboard({
     }
   }
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'Confirmé'
+      case 'completed': return 'Terminé'
+      case 'cancelled': return 'Annulé'
+      case 'disputed': return 'Contesté'
+      case 'pending': return 'En attente'
+      default: return status
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight mb-2">My Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight mb-2">Mon tableau de bord</h2>
         <p className="text-muted-foreground">
-          Manage your bookings and reviews
+          Gérez vos réservations et vos avis
         </p>
       </div>
 
@@ -64,7 +75,7 @@ export function Dashboard({
               <Calendar size={24} className="text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Bookings</p>
+              <p className="text-sm text-muted-foreground">Réservations totales</p>
               <p className="text-2xl font-bold">{stats.totalBookings}</p>
             </div>
           </div>
@@ -76,7 +87,7 @@ export function Dashboard({
               <CheckCircle size={24} className="text-secondary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Completed</p>
+              <p className="text-sm text-muted-foreground">Terminées</p>
               <p className="text-2xl font-bold">{stats.completedBookings}</p>
             </div>
           </div>
@@ -88,8 +99,8 @@ export function Dashboard({
               <CreditCard size={24} className="text-accent" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Spent</p>
-              <p className="text-2xl font-bold">${stats.totalSpent}</p>
+              <p className="text-sm text-muted-foreground">Total dépensé</p>
+              <p className="text-2xl font-bold">{stats.totalSpent}$</p>
             </div>
           </div>
         </Card>
@@ -100,7 +111,7 @@ export function Dashboard({
               <Star size={24} className="text-yellow-500" weight="fill" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Avg Rating</p>
+              <p className="text-sm text-muted-foreground">Note moyenne</p>
               <p className="text-2xl font-bold">{stats.avgRating.toFixed(1)}</p>
             </div>
           </div>
@@ -109,8 +120,8 @@ export function Dashboard({
 
       <Tabs defaultValue="bookings" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="bookings">My Bookings</TabsTrigger>
-          <TabsTrigger value="reviews">My Reviews</TabsTrigger>
+          <TabsTrigger value="bookings">Mes réservations</TabsTrigger>
+          <TabsTrigger value="reviews">Mes avis</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bookings" className="space-y-4">
@@ -118,11 +129,11 @@ export function Dashboard({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Provider</TableHead>
+                  <TableHead>Prestataire</TableHead>
                   <TableHead>Service</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Prix</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -130,7 +141,7 @@ export function Dashboard({
                 {bookings.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      No bookings yet. Start by booking a service!
+                      Aucune réservation pour le moment. Commencez par réserver un service!
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -139,18 +150,18 @@ export function Dashboard({
                     return (
                       <TableRow key={booking.id}>
                         <TableCell className="font-medium">
-                          {provider?.name || 'Unknown'}
+                          {provider?.name || 'Inconnu'}
                         </TableCell>
                         <TableCell>{booking.serviceType}</TableCell>
                         <TableCell>
-                          {format(new Date(booking.date), 'MMM dd, yyyy')} at {booking.time}
+                          {format(new Date(booking.date), 'dd MMM yyyy')} à {booking.time}
                         </TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(booking.status)}>
-                            {booking.status}
+                            {getStatusLabel(booking.status)}
                           </Badge>
                         </TableCell>
-                        <TableCell>${booking.price}</TableCell>
+                        <TableCell>{booking.price}$</TableCell>
                         <TableCell>
                           {booking.status === 'confirmed' && (
                             <Button
@@ -158,7 +169,7 @@ export function Dashboard({
                               variant="outline"
                               onClick={() => onMarkComplete(booking.id)}
                             >
-                              Mark Complete
+                              Marquer terminé
                             </Button>
                           )}
                           {booking.status === 'completed' && !reviews.find(r => r.bookingId === booking.id) && (
@@ -166,7 +177,7 @@ export function Dashboard({
                               size="sm"
                               onClick={() => onOpenReview(booking)}
                             >
-                              Leave Review
+                              Laisser un avis
                             </Button>
                           )}
                         </TableCell>
@@ -184,7 +195,7 @@ export function Dashboard({
             <Card className="p-8">
               <div className="text-center text-muted-foreground">
                 <Star size={48} className="mx-auto mb-4 text-muted" />
-                <p>No reviews yet. Complete a booking to leave a review!</p>
+                <p>Aucun avis pour le moment. Terminez une réservation pour laisser un avis!</p>
               </div>
             </Card>
           ) : (
@@ -197,7 +208,7 @@ export function Dashboard({
                       <div>
                         <h4 className="font-semibold">{provider?.name}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(review.createdAt), 'MMM dd, yyyy')}
+                          {format(new Date(review.createdAt), 'dd MMM yyyy')}
                         </p>
                       </div>
                       <div className="flex items-center gap-1">

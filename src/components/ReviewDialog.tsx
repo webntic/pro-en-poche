@@ -38,7 +38,7 @@ export function ReviewDialog({
 
   const handleSubmit = () => {
     if (rating === 0) {
-      toast.error('Please select a rating')
+      toast.error('Veuillez sélectionner une note')
       return
     }
 
@@ -61,15 +61,15 @@ export function ReviewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Rate Your Experience</DialogTitle>
+          <DialogTitle className="text-2xl">Évaluez votre expérience</DialogTitle>
           <DialogDescription>
-            How was your service with {providerName}?
+            Comment s'est passé votre service avec {providerName}?
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label>Rating</Label>
+            <Label>Note</Label>
             <div className="flex items-center gap-2 justify-center py-4">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -94,20 +94,20 @@ export function ReviewDialog({
             </div>
             {rating > 0 && (
               <p className="text-center text-sm text-muted-foreground">
-                {rating === 1 && 'Poor'}
-                {rating === 2 && 'Fair'}
-                {rating === 3 && 'Good'}
-                {rating === 4 && 'Very Good'}
+                {rating === 1 && 'Médiocre'}
+                {rating === 2 && 'Passable'}
+                {rating === 3 && 'Bon'}
+                {rating === 4 && 'Très bon'}
                 {rating === 5 && 'Excellent'}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="review-comment">Your Review (Optional)</Label>
+            <Label htmlFor="review-comment">Votre avis (Optionnel)</Label>
             <Textarea
               id="review-comment"
-              placeholder="Share details about your experience..."
+              placeholder="Partagez les détails de votre expérience..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={4}
@@ -116,14 +116,14 @@ export function ReviewDialog({
 
           <div className="flex gap-3">
             <Button onClick={handleSubmit} className="flex-1" size="lg">
-              Submit Review
+              Soumettre l'avis
             </Button>
             <Button
               onClick={() => onOpenChange(false)}
               variant="outline"
               size="lg"
             >
-              Cancel
+              Annuler
             </Button>
           </div>
         </div>

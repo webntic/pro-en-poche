@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,7 +18,9 @@ import { BookingDialog } from '@/components/BookingDialog'
 import { AuthDialog } from '@/components/AuthDialog'
 import { ReviewDialog } from '@/components/ReviewDialog'
 import { Dashboard } from '@/components/Dashboard'
+import { HeroSlider } from '@/components/HeroSlider'
 import { User, ServiceProvider, Booking, Review } from '@/lib/types'
+import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
 
 function App() {
@@ -36,11 +38,17 @@ function App() {
   const [showDashboard, setShowDashboard] = useState(false)
   
   const [filters, setFilters] = useState<FilterState>({
-    category: 'All Services',
-    location: 'All Locations',
+    category: 'Tous les services',
+    location: 'Toutes les villes',
     priceRange: [0, 200],
     minRating: 0,
   })
+
+  useEffect(() => {
+    if (!providers || providers.length === 0) {
+      setProviders(DEMO_PROVIDERS)
+    }
+  }, [])
 
   const handleAuth = (user: User) => {
     setCurrentUser(user)
@@ -49,12 +57,12 @@ function App() {
   const handleSignOut = () => {
     setCurrentUser(null)
     setShowDashboard(false)
-    toast.success('Signed out successfully')
+    toast.success('Déconnexion réussie')
   }
 
   const handleBook = (provider: ServiceProvider) => {
     if (!currentUser) {
-      toast.error('Please sign in to book a service')
+      toast.error('Veuillez vous connecter pour réserver un service')
       setAuthOpen(true)
       return
     }
@@ -71,7 +79,7 @@ function App() {
     
     setBookings((current) => [...(current || []), newBooking])
     setBookingDialogOpen(false)
-    toast.success('Booking confirmed! Payment held in escrow.')
+    toast.success('Réservation confirmée! Le paiement est conservé en garantie.')
   }
 
   const handleMarkComplete = (bookingId: string) => {
@@ -80,7 +88,7 @@ function App() {
         b.id === bookingId ? { ...b, status: 'completed', completedAt: new Date().toISOString() } : b
       )
     )
-    toast.success('Service marked as complete!')
+    toast.success('Service marqué comme terminé!')
   }
 
   const handleOpenReview = (booking: Booking) => {
@@ -119,17 +127,17 @@ function App() {
     )
     
     setReviewDialogOpen(false)
-    toast.success('Review submitted! Payment released to provider.')
+    toast.success('Avis soumis! Le paiement a été libéré au prestataire.')
   }
 
   const filteredProviders = (providers || []).filter((provider) => {
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
     
-    const matchesCategory = filters.category === 'All Services' || 
+    const matchesCategory = filters.category === 'Tous les services' || 
       provider.services.includes(filters.category)
     
-    const matchesLocation = filters.location === 'All Locations' || 
+    const matchesLocation = filters.location === 'Toutes les villes' || 
       provider.location === filters.location
     
     const matchesPrice = provider.hourlyRate >= filters.priceRange[0] && 
@@ -171,7 +179,7 @@ function App() {
                     className="gap-2"
                   >
                     <ChartLine size={18} />
-                    Dashboard
+                    <span className="hidden sm:inline">Tableau de bord</span>
                   </Button>
                   
                   <DropdownMenu>
@@ -189,12 +197,12 @@ function App() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setShowDashboard(true)}>
                         <ChartLine size={16} className="mr-2" />
-                        Dashboard
+                        Tableau de bord
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut}>
                         <SignOut size={16} className="mr-2" />
-                        Sign Out
+                        Déconnexion
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -202,7 +210,7 @@ function App() {
               ) : (
                 <Button onClick={() => setAuthOpen(true)} className="gap-2">
                   <UserIcon size={18} />
-                  Sign In
+                  Connexion
                 </Button>
               )}
             </div>
@@ -221,12 +229,14 @@ function App() {
           />
         ) : (
           <>
+            <HeroSlider />
+
             <div className="mb-8 text-center">
               <h1 className="text-4xl font-bold tracking-tight mb-3">
-                Find Professional Services Near You
+                Trouvez des Services Professionnels près de Chez Vous
               </h1>
               <p className="text-lg text-muted-foreground mb-6">
-                Connect with verified professionals for all your needs
+                Connectez-vous avec des professionnels vérifiés partout au Canada
               </p>
 
               <div className="max-w-2xl mx-auto">
@@ -236,7 +246,7 @@ function App() {
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
                   />
                   <Input
-                    placeholder="Search for services or professionals..."
+                    placeholder="Recherchez des services ou des professionnels..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-12 h-12 text-base"
@@ -252,8 +262,8 @@ function App() {
                   onFilterChange={setFilters}
                   onClear={() =>
                     setFilters({
-                      category: 'All Services',
-                      location: 'All Locations',
+                      category: 'Tous les services',
+                      location: 'Toutes les villes',
                       priceRange: [0, 200],
                       minRating: 0,
                     })
@@ -264,14 +274,14 @@ function App() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold">
-                    {filteredProviders.length} Service{filteredProviders.length !== 1 ? 's' : ''} Available
+                    {filteredProviders.length} Service{filteredProviders.length !== 1 ? 's' : ''} Disponible{filteredProviders.length !== 1 ? 's' : ''}
                   </h2>
                 </div>
 
                 {filteredProviders.length === 0 ? (
                   <div className="text-center py-16">
                     <p className="text-lg text-muted-foreground">
-                      No services found. Try adjusting your filters.
+                      Aucun service trouvé. Essayez d'ajuster vos filtres.
                     </p>
                   </div>
                 ) : (

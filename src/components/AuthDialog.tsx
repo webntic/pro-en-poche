@@ -13,8 +13,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { User, UserRole } from '@/lib/types'
+import { DEMO_ACCOUNTS, CANADIAN_CITIES } from '@/lib/demo-data'
 import { toast } from 'sonner'
-import { UserCircle, Briefcase, ArrowLeft } from '@phosphor-icons/react'
+import { UserCircle, Briefcase, ArrowLeft, Key } from '@phosphor-icons/react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 
 interface AuthDialogProps {
   open: boolean
@@ -37,20 +40,27 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
     hourlyRate: '',
   })
 
+  const handleDemoLogin = (accountType: 'admin' | 'client' | 'provider') => {
+    const demoUser = DEMO_ACCOUNTS[accountType]
+    onAuth(demoUser as User)
+    toast.success(`Bienvenue ${demoUser.name}!`)
+    onOpenChange(false)
+  }
+
   const handleSubmit = () => {
     if (!formData.email || !formData.password) {
-      toast.error('Please fill in all required fields')
+      toast.error('Veuillez remplir tous les champs requis')
       return
     }
 
     if (mode === 'select-role' && !formData.name) {
-      toast.error('Please enter your name')
+      toast.error('Veuillez entrer votre nom')
       return
     }
 
     if (mode === 'select-role' && role === 'provider') {
       if (!formData.bio || !formData.services || !formData.location || !formData.hourlyRate) {
-        toast.error('Please complete all provider fields')
+        toast.error('Veuillez compléter tous les champs prestataire')
         return
       }
     }
@@ -64,7 +74,7 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
     }
 
     onAuth(newUser)
-    toast.success(`Welcome ${newUser.name}!`)
+    toast.success(`Bienvenue ${newUser.name}!`)
     onOpenChange(false)
     
     setFormData({
@@ -96,15 +106,15 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            {mode === 'signin' && 'Sign In'}
-            {mode === 'signup' && 'Create Account'}
-            {mode === 'select-role' && `${role === 'client' ? 'Client' : 'Provider'} Registration`}
+            {mode === 'signin' && 'Connexion'}
+            {mode === 'signup' && 'Créer un compte'}
+            {mode === 'select-role' && `Inscription ${role === 'client' ? 'Client' : 'Prestataire'}`}
           </DialogTitle>
           <DialogDescription>
-            {mode === 'signin' && 'Welcome back! Enter your credentials to continue.'}
-            {mode === 'signup' && 'Choose your account type to get started.'}
-            {mode === 'select-role' && role === 'client' && 'Create your client account to start booking services.'}
-            {mode === 'select-role' && role === 'provider' && 'Create your provider profile to offer your services.'}
+            {mode === 'signin' && 'Bon retour! Entrez vos identifiants pour continuer.'}
+            {mode === 'signup' && 'Choisissez votre type de compte pour commencer.'}
+            {mode === 'select-role' && role === 'client' && 'Créez votre compte client pour commencer à réserver des services.'}
+            {mode === 'select-role' && role === 'provider' && 'Créez votre profil prestataire pour offrir vos services.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -115,7 +125,7 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
             className="gap-2 self-start -mt-2"
           >
             <ArrowLeft size={16} />
-            Back to account type
+            Retour au type de compte
           </Button>
         )}
 
@@ -131,23 +141,75 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
           }}
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="signin">Connexion</TabsTrigger>
+            <TabsTrigger value="signup">Inscription</TabsTrigger>
           </TabsList>
 
           <TabsContent value="signin" className="space-y-4 mt-4">
+            <Card className="p-4 bg-muted/50">
+              <div className="flex items-start gap-2 mb-3">
+                <Key size={20} className="text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm mb-1">Comptes de démonstration</h4>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Testez la plateforme avec ces comptes pré-configurés
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDemoLogin('admin')}
+                  className="justify-start gap-2"
+                >
+                  <UserCircle size={16} />
+                  <div className="text-left">
+                    <div className="font-medium">Admin</div>
+                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.admin.email}</div>
+                  </div>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDemoLogin('client')}
+                  className="justify-start gap-2"
+                >
+                  <UserCircle size={16} />
+                  <div className="text-left">
+                    <div className="font-medium">Client</div>
+                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.client.email}</div>
+                  </div>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDemoLogin('provider')}
+                  className="justify-start gap-2"
+                >
+                  <Briefcase size={16} />
+                  <div className="text-left">
+                    <div className="font-medium">Prestataire</div>
+                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.provider.email}</div>
+                  </div>
+                </Button>
+              </div>
+            </Card>
+
+            <Separator />
+
             <div className="space-y-2">
               <Label htmlFor="signin-email">Email</Label>
               <Input
                 id="signin-email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="vous@exemple.ca"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signin-password">Password</Label>
+              <Label htmlFor="signin-password">Mot de passe</Label>
               <Input
                 id="signin-password"
                 type="password"
@@ -156,7 +218,7 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
               />
             </div>
             <Button onClick={handleSubmit} className="w-full" size="lg">
-              Sign In
+              Se connecter
             </Button>
           </TabsContent>
 
@@ -164,9 +226,9 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
             {mode === 'signup' ? (
               <div className="space-y-4">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Choose your account type</h3>
+                  <h3 className="text-lg font-semibold mb-2">Choisissez votre type de compte</h3>
                   <p className="text-sm text-muted-foreground">
-                    Select how you want to use Pro En Poche
+                    Sélectionnez comment vous souhaitez utiliser Pro En Poche
                   </p>
                 </div>
 
@@ -180,13 +242,13 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                         <UserCircle size={32} className="text-primary" weight="fill" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-lg mb-2">I'm a Client</h4>
+                        <h4 className="font-semibold text-lg mb-2">Je suis un Client</h4>
                         <p className="text-sm text-muted-foreground">
-                          I want to find and book professional services
+                          Je veux trouver et réserver des services professionnels
                         </p>
                       </div>
                       <Button className="w-full" variant="outline">
-                        Continue as Client
+                        Continuer comme Client
                       </Button>
                     </div>
                   </Card>
@@ -200,13 +262,13 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                         <Briefcase size={32} className="text-secondary" weight="fill" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-lg mb-2">I'm a Provider</h4>
+                        <h4 className="font-semibold text-lg mb-2">Je suis un Prestataire</h4>
                         <p className="text-sm text-muted-foreground">
-                          I want to offer my professional services to clients
+                          Je veux offrir mes services professionnels aux clients
                         </p>
                       </div>
                       <Button className="w-full" variant="outline">
-                        Continue as Provider
+                        Continuer comme Prestataire
                       </Button>
                     </div>
                   </Card>
@@ -217,10 +279,10 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                 {role === 'client' ? (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="signup-name">Full Name *</Label>
+                      <Label htmlFor="signup-name">Nom complet *</Label>
                       <Input
                         id="signup-name"
-                        placeholder="John Doe"
+                        placeholder="Marie Tremblay"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       />
@@ -231,14 +293,14 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="vous@exemple.ca"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-password">Password *</Label>
+                      <Label htmlFor="signup-password">Mot de passe *</Label>
                       <Input
                         id="signup-password"
                         type="password"
@@ -249,16 +311,16 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                     </div>
 
                     <Button onClick={handleSubmit} className="w-full" size="lg">
-                      Create Client Account
+                      Créer un compte Client
                     </Button>
                   </>
                 ) : (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="provider-name">Full Name *</Label>
+                      <Label htmlFor="provider-name">Nom complet *</Label>
                       <Input
                         id="provider-name"
-                        placeholder="John Doe"
+                        placeholder="Jean Lefebvre"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       />
@@ -269,14 +331,14 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                       <Input
                         id="provider-email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="vous@exemple.ca"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="provider-password">Password *</Label>
+                      <Label htmlFor="provider-password">Mot de passe *</Label>
                       <Input
                         id="provider-password"
                         type="password"
@@ -287,10 +349,10 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="bio">Professional Bio *</Label>
+                      <Label htmlFor="bio">Bio professionnelle *</Label>
                       <Textarea
                         id="bio"
-                        placeholder="Tell clients about your experience and expertise..."
+                        placeholder="Parlez aux clients de votre expérience et expertise..."
                         value={formData.bio}
                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                         rows={3}
@@ -298,33 +360,39 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="services">Services Offered (comma separated) *</Label>
+                      <Label htmlFor="services">Services offerts (séparés par des virgules) *</Label>
                       <Input
                         id="services"
-                        placeholder="e.g., Plumbing, Electrical Work, Home Repairs"
+                        placeholder="ex: Plomberie, Électricité, Réparations"
                         value={formData.services}
                         onChange={(e) => setFormData({ ...formData, services: e.target.value })}
                       />
-                      <p className="text-xs text-muted-foreground">Separate multiple services with commas</p>
+                      <p className="text-xs text-muted-foreground">Séparez les services multiples par des virgules</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="location">Location *</Label>
-                        <Input
-                          id="location"
-                          placeholder="e.g., Paris, Lyon"
-                          value={formData.location}
-                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        />
+                        <Label htmlFor="location">Ville *</Label>
+                        <Select value={formData.location} onValueChange={(value) => setFormData({ ...formData, location: value })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez une ville" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CANADIAN_CITIES.filter(city => city !== 'Toutes les villes').map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="rate">Hourly Rate (€) *</Label>
+                        <Label htmlFor="rate">Tarif horaire (CAD $) *</Label>
                         <Input
                           id="rate"
                           type="number"
-                          placeholder="50"
+                          placeholder="75"
                           value={formData.hourlyRate}
                           onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
                         />
@@ -332,18 +400,18 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="availability">Availability</Label>
+                      <Label htmlFor="availability">Disponibilité</Label>
                       <Input
                         id="availability"
-                        placeholder="e.g., Monday-Friday, 9am-5pm"
+                        placeholder="ex: Lun-Ven, 9h-17h"
                         value={formData.availability}
                         onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
                       />
-                      <p className="text-xs text-muted-foreground">Optional: Describe your typical working hours</p>
+                      <p className="text-xs text-muted-foreground">Optionnel: Décrivez vos heures de travail habituelles</p>
                     </div>
 
                     <Button onClick={handleSubmit} className="w-full" size="lg">
-                      Create Provider Account
+                      Créer un compte Prestataire
                     </Button>
                   </>
                 )}

@@ -60,7 +60,7 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
           ))}
           {provider.services.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{provider.services.length - 3} more
+              +{provider.services.length - 3} autres
             </Badge>
           )}
         </div>
@@ -80,15 +80,15 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
           <div className="flex flex-col items-end gap-2">
             <div className="text-right">
               <div className="text-2xl font-bold text-foreground">
-                ${provider.hourlyRate}
+                {provider.hourlyRate}$
               </div>
-              <div className="text-xs text-muted-foreground">per hour</div>
+              <div className="text-xs text-muted-foreground">par heure</div>
             </div>
             <Button 
               onClick={() => onBook(provider)}
               className="w-full"
             >
-              Book Service
+              Réserver
             </Button>
           </div>
         </div>

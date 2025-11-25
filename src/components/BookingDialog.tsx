@@ -37,7 +37,7 @@ export function BookingDialog({
 
   const handleConfirm = () => {
     if (!date || !time || !serviceType) {
-      toast.error('Please fill in all booking details')
+      toast.error('Veuillez remplir tous les détails de la réservation')
       return
     }
 
@@ -68,18 +68,18 @@ export function BookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Book Service with {provider.name}</DialogTitle>
+          <DialogTitle className="text-2xl">Réserver un service avec {provider.name}</DialogTitle>
           <DialogDescription>
-            Select your preferred date, time, and service type
+            Sélectionnez votre date, heure et type de service préférés
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label>Service Type</Label>
+            <Label>Type de service</Label>
             <Select value={serviceType} onValueChange={setServiceType}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a service" />
+                <SelectValue placeholder="Sélectionnez un service" />
               </SelectTrigger>
               <SelectContent>
                 {provider.services.map((service) => (
@@ -92,7 +92,7 @@ export function BookingDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Select Date</Label>
+            <Label>Sélectionnez une date</Label>
             <Calendar
               mode="single"
               selected={date}
@@ -103,10 +103,10 @@ export function BookingDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Select Time</Label>
+            <Label>Sélectionnez une heure</Label>
             <Select value={time} onValueChange={setTime}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a time slot" />
+                <SelectValue placeholder="Sélectionnez un créneau horaire" />
               </SelectTrigger>
               <SelectContent>
                 {timeSlots.map((slot) => (
@@ -120,17 +120,17 @@ export function BookingDialog({
 
           <div className="bg-muted p-4 rounded-lg space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Hourly Rate</span>
-              <span className="font-medium">${provider.hourlyRate}</span>
+              <span className="text-muted-foreground">Tarif horaire</span>
+              <span className="font-medium">{provider.hourlyRate}$</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Service Fee (15%)</span>
-              <span className="font-medium">${(provider.hourlyRate * 0.15).toFixed(2)}</span>
+              <span className="text-muted-foreground">Frais de service (15%)</span>
+              <span className="font-medium">{(provider.hourlyRate * 0.15).toFixed(2)}$</span>
             </div>
             <div className="border-t border-border pt-2 flex justify-between">
               <span className="font-semibold">Total</span>
               <span className="font-bold text-lg">
-                ${(provider.hourlyRate * 1.15).toFixed(2)}
+                {(provider.hourlyRate * 1.15).toFixed(2)}$
               </span>
             </div>
           </div>
@@ -142,19 +142,19 @@ export function BookingDialog({
               size="lg"
             >
               <CreditCard className="mr-2" size={18} />
-              Confirm & Pay
+              Confirmer et payer
             </Button>
             <Button 
               onClick={() => onOpenChange(false)}
               variant="outline"
               size="lg"
             >
-              Cancel
+              Annuler
             </Button>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">
-            Payment will be held in escrow until service completion. You'll be charged ${(provider.hourlyRate * 1.15).toFixed(2)} now.
+            Le paiement sera conservé en garantie jusqu'à l'achèvement du service. Vous serez facturé {(provider.hourlyRate * 1.15).toFixed(2)}$ maintenant.
           </p>
         </div>
       </DialogContent>
