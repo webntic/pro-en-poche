@@ -23,9 +23,13 @@ import { AdminDashboard } from '@/components/AdminDashboard'
 import { AnnouncementDialog } from '@/components/AnnouncementDialog'
 import { HeroSlider } from '@/components/HeroSlider'
 import { Logo } from '@/components/Logo'
+import { AboutSection } from '@/components/AboutSection'
+import { ServicesSection } from '@/components/ServicesSection'
+import { ContactSection } from '@/components/ContactSection'
 import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
+import logoImage from '@/assets/images/logo.svg'
 
 function App() {
   const [currentUser, setCurrentUser] = useKV<User | null>('current-user', null)
@@ -44,6 +48,7 @@ function App() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
+  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'prestataires' | 'contact'>('accueil')
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'Tous les services',
@@ -260,15 +265,44 @@ function App() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-8">
             <button 
-              onClick={() => setShowDashboard(false)}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              onClick={() => {
+                setShowDashboard(false)
+                setActiveSection('accueil')
+              }}
+              className="flex-shrink-0 hover:opacity-80 transition-opacity"
             >
-              <Logo className="h-10 w-auto" />
+              <img src={logoImage} alt="Pro En Poche" className="h-12 w-auto" />
             </button>
 
-            <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
+              {[
+                { key: 'accueil' as const, label: 'Accueil' },
+                { key: 'apropos' as const, label: 'À Propos' },
+                { key: 'services' as const, label: 'Services' },
+                { key: 'prestataires' as const, label: 'Prestataires' },
+                { key: 'contact' as const, label: 'Contact' },
+              ].map((item) => (
+                <Button
+                  key={item.key}
+                  variant="ghost"
+                  onClick={() => {
+                    setShowDashboard(false)
+                    setActiveSection(item.key)
+                  }}
+                  className={`font-medium transition-colors ${
+                    activeSection === item.key
+                      ? 'text-primary'
+                      : 'text-foreground hover:text-primary'
+                  }`}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-4 flex-shrink-0">
               {currentUser ? (
                 <>
                   <Button
@@ -349,9 +383,15 @@ function App() {
             />
           )}
         </main>
-      ) : (
+      ) : activeSection === 'apropos' ? (
+        <AboutSection />
+      ) : activeSection === 'services' ? (
+        <ServicesSection />
+      ) : activeSection === 'contact' ? (
+        <ContactSection />
+      ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
         <>
-          <HeroSlider />
+          {activeSection === 'accueil' && <HeroSlider />}
 
           <main className="container mx-auto px-4 py-8">
             <div className="mb-8 text-center">
@@ -422,7 +462,7 @@ function App() {
             </div>
           </main>
         </>
-      )}
+      ) : null}
 
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} onAuth={handleAuth} />
       

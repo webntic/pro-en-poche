@@ -1,0 +1,8 @@
+<svg width="140" height="60" viewBox="0 0 140 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <path d="M15 10 C15 10, 8 10, 8 18 C8 26, 15 26, 15 26 L25 26 C25 26, 32 26, 32 34 C32 42, 25 42, 25 42 L15 42" stroke="#0066CC" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <text x="45" y="25" font-family="Arial, sans-serif" font-weight="bold" font-size="14" fill="#0066CC">PRO EN</text>
+    <text x="45" y="40" font-family="Arial, sans-serif" font-weight="bold" font-size="14" fill="#0066CC">POCHE</text>
+    <text x="45" y="52" font-family="Arial, sans-serif" font-size="8" fill="#666">MARKETPLACE DE SERVICES</text>
+  </g>
+</svg>
