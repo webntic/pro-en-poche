@@ -1,0 +1,60 @@
+export type UserRole = 'client' | 'provider' | 'admin'
+
+export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'disputed'
+
+export type PaymentStatus = 'pending' | 'held' | 'released' | 'refunded'
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  avatar?: string
+  createdAt: string
+}
+
+export interface ServiceProvider extends User {
+  role: 'provider'
+  bio: string
+  services: string[]
+  location: string
+  availability: string
+  hourlyRate: number
+  rating: number
+  reviewCount: number
+  verified: boolean
+}
+
+export interface Client extends User {
+  role: 'client'
+}
+
+export interface Booking {
+  id: string
+  providerId: string
+  clientId: string
+  serviceType: string
+  date: string
+  time: string
+  status: BookingStatus
+  price: number
+  paymentStatus: PaymentStatus
+  createdAt: string
+  completedAt?: string
+}
+
+export interface Review {
+  id: string
+  bookingId: string
+  providerId: string
+  clientId: string
+  rating: number
+  comment: string
+  createdAt: string
+}
+
+export interface ServiceCategory {
+  id: string
+  name: string
+  icon: string
+}
