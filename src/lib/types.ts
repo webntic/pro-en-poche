@@ -13,6 +13,15 @@ export interface User {
   createdAt: string
 }
 
+export type SubscriptionPlan = 'basic' | 'premium' | 'enterprise' | null
+
+export interface Subscription {
+  plan: SubscriptionPlan
+  startDate: string
+  endDate: string
+  isActive: boolean
+}
+
 export interface ServiceProvider extends User {
   role: 'provider'
   bio: string
@@ -23,6 +32,7 @@ export interface ServiceProvider extends User {
   rating: number
   reviewCount: number
   verified: boolean
+  subscription?: Subscription
 }
 
 export interface Client extends User {

@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Switch } from '@/components/ui/switch'
-import { Announcement, Booking, Review } from '@/lib/types'
+import { Announcement, Booking, Review, ServiceProvider } from '@/lib/types'
 import {
   Calendar,
   CreditCard,
@@ -28,6 +28,7 @@ import { toast } from 'sonner'
 
 interface ProviderDashboardProps {
   providerId: string
+  provider: ServiceProvider
   announcements: Announcement[]
   bookings: Booking[]
   reviews: Review[]
@@ -35,10 +36,12 @@ interface ProviderDashboardProps {
   onEditAnnouncement: (announcement: Announcement) => void
   onDeleteAnnouncement: (announcementId: string) => void
   onToggleAnnouncementStatus: (announcementId: string, isActive: boolean) => void
+  onGoToSubscription: () => void
 }
 
 export function ProviderDashboard({
   providerId,
+  provider,
   announcements,
   bookings,
   reviews,
@@ -46,6 +49,7 @@ export function ProviderDashboard({
   onEditAnnouncement,
   onDeleteAnnouncement,
   onToggleAnnouncementStatus,
+  onGoToSubscription,
 }: ProviderDashboardProps) {
   const providerBookings = bookings.filter((b) => b.providerId === providerId)
   const providerReviews = reviews.filter((r) => r.providerId === providerId)
@@ -110,6 +114,49 @@ export function ProviderDashboard({
         <p className="text-muted-foreground">Gérez vos annonces, réservations et avis</p>
       </div>
 
+      {provider.subscription?.isActive ? (
+        <Card className="p-6 border-secondary bg-secondary/5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-secondary/20 rounded-lg">
+                <CheckCircle size={24} className="text-secondary" weight="fill" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Plan {provider.subscription.plan?.toUpperCase()}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Actif jusqu'au {format(new Date(provider.subscription.endDate), 'dd/MM/yyyy')}
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={onGoToSubscription}>
+              Changer de plan
+            </Button>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-6 border-accent bg-accent/5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-accent/20 rounded-lg">
+                <CreditCard size={24} className="text-accent" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Aucun abonnement actif</h3>
+                <p className="text-sm text-muted-foreground">
+                  Souscrivez à un plan pour créer des annonces
+                </p>
+              </div>
+            </div>
+            <Button onClick={onGoToSubscription} className="gap-2">
+              <CreditCard size={18} />
+              Voir les plans
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="p-6">
           <div className="flex items-center gap-4">
@@ -172,95 +219,114 @@ export function ProviderDashboard({
         </TabsList>
 
         <TabsContent value="announcements" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              Créez et gérez vos annonces de services
-            </p>
-            <Button onClick={onCreateAnnouncement} className="gap-2">
-              <Plus size={18} />
-              Nouvelle annonce
-            </Button>
-          </div>
-
-          {announcements.length === 0 ? (
-            <Card className="p-8">
-              <div className="text-center text-muted-foreground">
-                <MegaphoneSimple size={48} className="mx-auto mb-4 text-muted" />
-                <p className="mb-4">
-                  Vous n'avez pas encore d'annonces. Créez votre première annonce pour
-                  commencer à recevoir des clients!
+          {!provider.subscription?.isActive ? (
+            <Card className="p-8 border-accent bg-accent/5">
+              <div className="text-center">
+                <MegaphoneSimple size={48} className="mx-auto mb-4 text-accent" />
+                <h3 className="text-xl font-semibold mb-2">Abonnement requis</h3>
+                <p className="text-muted-foreground mb-6">
+                  Pour déposer des annonces, vous devez souscrire à un plan d'abonnement.
+                  Choisissez le plan qui correspond à vos besoins et commencez à recevoir des clients!
                 </p>
-                <Button onClick={onCreateAnnouncement} className="gap-2">
-                  <Plus size={18} />
-                  Créer ma première annonce
+                <Button onClick={onGoToSubscription} className="gap-2">
+                  <CreditCard size={18} />
+                  Voir les plans d'abonnement
                 </Button>
               </div>
             </Card>
           ) : (
-            <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Titre</TableHead>
-                    <TableHead>Catégorie</TableHead>
-                    <TableHead>Ville</TableHead>
-                    <TableHead>Tarif/h</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead>Créée le</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {announcements.map((announcement) => (
-                    <TableRow key={announcement.id}>
-                      <TableCell className="font-medium max-w-xs">
-                        <div className="truncate">{announcement.title}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{announcement.category}</Badge>
-                      </TableCell>
-                      <TableCell>{announcement.location}</TableCell>
-                      <TableCell>{announcement.hourlyRate}$</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={announcement.isActive}
-                            onCheckedChange={(checked) =>
-                              onToggleAnnouncementStatus(announcement.id, checked)
-                            }
-                          />
-                          <span className="text-xs text-muted-foreground">
-                            {announcement.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(announcement.createdAt), 'dd/MM/yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => onEditAnnouncement(announcement)}
-                          >
-                            <Pencil size={16} />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDelete(announcement.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash size={16} />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
+            <>
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  Créez et gérez vos annonces de services
+                </p>
+                <Button onClick={onCreateAnnouncement} className="gap-2">
+                  <Plus size={18} />
+                  Nouvelle annonce
+                </Button>
+              </div>
+
+              {announcements.length === 0 ? (
+                <Card className="p-8">
+                  <div className="text-center text-muted-foreground">
+                    <MegaphoneSimple size={48} className="mx-auto mb-4 text-muted" />
+                    <p className="mb-4">
+                      Vous n'avez pas encore d'annonces. Créez votre première annonce pour
+                      commencer à recevoir des clients!
+                    </p>
+                    <Button onClick={onCreateAnnouncement} className="gap-2">
+                      <Plus size={18} />
+                      Créer ma première annonce
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <Card>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Titre</TableHead>
+                        <TableHead>Catégorie</TableHead>
+                        <TableHead>Ville</TableHead>
+                        <TableHead>Tarif/h</TableHead>
+                        <TableHead>Statut</TableHead>
+                        <TableHead>Créée le</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {announcements.map((announcement) => (
+                        <TableRow key={announcement.id}>
+                          <TableCell className="font-medium max-w-xs">
+                            <div className="truncate">{announcement.title}</div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{announcement.category}</Badge>
+                          </TableCell>
+                          <TableCell>{announcement.location}</TableCell>
+                          <TableCell>{announcement.hourlyRate}$</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={announcement.isActive}
+                                onCheckedChange={(checked) =>
+                                  onToggleAnnouncementStatus(announcement.id, checked)
+                                }
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                {announcement.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {format(new Date(announcement.createdAt), 'dd/MM/yyyy')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => onEditAnnouncement(announcement)}
+                              >
+                                <Pencil size={16} />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDelete(announcement.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
+              )}
+            </>
           )}
         </TabsContent>
 

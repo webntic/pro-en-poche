@@ -109,8 +109,40 @@ function App() {
     } else if (currentUser.role !== 'provider') {
       toast.error('Seuls les prestataires peuvent souscrire à un plan')
     } else {
-      toast.success(`Plan ${planName} sélectionné! Fonctionnalité de paiement à venir.`)
+      const startDate = new Date()
+      const endDate = new Date()
+      endDate.setMonth(endDate.getMonth() + 1)
+      
+      const subscription = {
+        plan: planName.toLowerCase() as 'basic' | 'premium' | 'enterprise',
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        isActive: true,
+      }
+      
+      setProviders((current) =>
+        (current || []).map((p) =>
+          p.id === currentUser.id ? { ...p, subscription } : p
+        )
+      )
+      
+      setCurrentUser((current) => {
+        if (current && current.role === 'provider') {
+          return { ...current, subscription } as ServiceProvider
+        }
+        return current || null
+      })
+      
+      toast.success(`Plan ${planName} activé avec succès! Vous pouvez maintenant créer des annonces.`)
+      setShowDashboard(true)
+      setActiveSection('accueil')
     }
+  }
+
+  const handleGoToSubscription = () => {
+    setShowDashboard(false)
+    setActiveSection('tarifs')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleConfirmBooking = (bookingData: Omit<Booking, 'id' | 'createdAt'>) => {
@@ -385,6 +417,7 @@ function App() {
           ) : isProvider ? (
             <ProviderDashboard
               providerId={currentUser.id}
+              provider={currentUser as ServiceProvider}
               announcements={userAnnouncements}
               bookings={bookings || []}
               reviews={reviews || []}
@@ -392,6 +425,7 @@ function App() {
               onEditAnnouncement={handleEditAnnouncement}
               onDeleteAnnouncement={handleDeleteAnnouncement}
               onToggleAnnouncementStatus={handleToggleAnnouncementStatus}
+              onGoToSubscription={handleGoToSubscription}
             />
           ) : (
             <Dashboard
