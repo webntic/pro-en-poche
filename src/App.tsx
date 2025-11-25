@@ -26,6 +26,7 @@ import { Logo } from '@/components/Logo'
 import { AboutSection } from '@/components/AboutSection'
 import { ServicesSection } from '@/components/ServicesSection'
 import { ContactSection } from '@/components/ContactSection'
+import { BecomeProviderSection } from '@/components/BecomeProviderSection'
 import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -391,7 +392,12 @@ function App() {
         <ContactSection />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
         <>
-          {activeSection === 'accueil' && <HeroSlider />}
+          {activeSection === 'accueil' && (
+            <>
+              <HeroSlider />
+              <BecomeProviderSection />
+            </>
+          )}
 
           <main className="container mx-auto px-4 py-8">
             <div className="mb-8 text-center">
