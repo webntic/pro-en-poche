@@ -19,6 +19,7 @@ import { AuthDialog } from '@/components/AuthDialog'
 import { ReviewDialog } from '@/components/ReviewDialog'
 import { Dashboard } from '@/components/Dashboard'
 import { ProviderDashboard } from '@/components/ProviderDashboard'
+import { AdminDashboard } from '@/components/AdminDashboard'
 import { AnnouncementDialog } from '@/components/AnnouncementDialog'
 import { HeroSlider } from '@/components/HeroSlider'
 import { Logo } from '@/components/Logo'
@@ -29,6 +30,7 @@ import { toast } from 'sonner'
 function App() {
   const [currentUser, setCurrentUser] = useKV<User | null>('current-user', null)
   const [providers, setProviders] = useKV<ServiceProvider[]>('providers', [])
+  const [users, setUsers] = useKV<User[]>('users', [])
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [reviews, setReviews] = useKV<Review[]>('reviews', [])
   const [announcements, setAnnouncements] = useKV<Announcement[]>('announcements', [])
@@ -58,6 +60,20 @@ function App() {
 
   const handleAuth = (user: User) => {
     setCurrentUser(user)
+    
+    const existingUser = (users || []).find(u => u.id === user.id)
+    if (!existingUser) {
+      if (user.role === 'provider') {
+        const newProvider: ServiceProvider = {
+          ...(user as ServiceProvider),
+          verified: false,
+        }
+        setProviders((current) => [...(current || []), newProvider])
+        toast.success('Votre compte prestataire est en attente de validation par un administrateur')
+      } else {
+        setUsers((current) => [...(current || []), user])
+      }
+    }
   }
 
   const handleSignOut = () => {
@@ -182,7 +198,32 @@ function App() {
     toast.success(isActive ? 'Annonce activée' : 'Annonce désactivée')
   }
 
+  const handleApproveProvider = (providerId: string) => {
+    setProviders((current) =>
+      (current || []).map((p) =>
+        p.id === providerId ? { ...p, verified: true } : p
+      )
+    )
+    const provider = providers?.find(p => p.id === providerId)
+    if (provider) {
+      setUsers((current) => [...(current || []), provider])
+    }
+    toast.success('Prestataire approuvé avec succès!')
+  }
+
+  const handleRejectProvider = (providerId: string) => {
+    setProviders((current) => (current || []).filter((p) => p.id !== providerId))
+    toast.success('Prestataire rejeté')
+  }
+
+  const handleDeleteUser = (userId: string) => {
+    setUsers((current) => (current || []).filter((u) => u.id !== userId))
+    setProviders((current) => (current || []).filter((p) => p.id !== userId))
+  }
+
   const filteredProviders = (providers || []).filter((provider) => {
+    if (!provider.verified) return false
+    
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
     
@@ -212,6 +253,8 @@ function App() {
     .slice(0, 2) || 'U'
 
   const isProvider = currentUser?.role === 'provider'
+  const isAdmin = currentUser?.role === 'admin'
+  const allUsers = [...(users || []), ...(providers || [])]
 
   return (
     <div className="min-h-screen bg-background">
@@ -273,9 +316,19 @@ function App() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {showDashboard && currentUser ? (
-          isProvider ? (
+      {showDashboard && currentUser ? (
+        <main className="container mx-auto px-4 py-8">
+          {isAdmin ? (
+            <AdminDashboard
+              users={allUsers}
+              providers={providers || []}
+              bookings={bookings || []}
+              reviews={reviews || []}
+              onApproveProvider={handleApproveProvider}
+              onRejectProvider={handleRejectProvider}
+              onDeleteUser={handleDeleteUser}
+            />
+          ) : isProvider ? (
             <ProviderDashboard
               providerId={currentUser.id}
               announcements={userAnnouncements}
@@ -294,11 +347,13 @@ function App() {
               onMarkComplete={handleMarkComplete}
               onOpenReview={handleOpenReview}
             />
-          )
-        ) : (
-          <>
-            <HeroSlider />
+          )}
+        </main>
+      ) : (
+        <>
+          <HeroSlider />
 
+          <main className="container mx-auto px-4 py-8">
             <div className="mb-8 text-center">
               <h1 className="text-4xl font-bold tracking-tight mb-3">
                 Trouvez des Services Professionnels près de Chez Vous
@@ -365,9 +420,9 @@ function App() {
                 )}
               </div>
             </div>
-          </>
-        )}
-      </main>
+          </main>
+        </>
+      )}
 
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} onAuth={handleAuth} />
       

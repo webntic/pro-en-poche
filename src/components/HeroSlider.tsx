@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Card } from '@/components/ui/card'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 
@@ -51,8 +50,8 @@ export function HeroSlider() {
   }
 
   return (
-    <Card className="relative overflow-hidden mb-8">
-      <div className="relative h-[400px] md:h-[500px]">
+    <div className="relative overflow-hidden w-full">
+      <div className="relative h-[500px] md:h-[600px] lg:h-[700px]">
         {SLIDES.map((slide, index) => (
           <div
             key={slide.id}
@@ -68,10 +67,10 @@ export function HeroSlider() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30">
               <div className="container mx-auto px-4 h-full flex flex-col justify-center">
                 <div className="max-w-2xl text-white">
-                  <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
                     {slide.title}
                   </h2>
-                  <p className="text-xl md:text-2xl opacity-90">
+                  <p className="text-xl md:text-2xl lg:text-3xl opacity-90">
                     {slide.description}
                   </p>
                 </div>
@@ -98,7 +97,7 @@ export function HeroSlider() {
           <CaretRight size={24} />
         </Button>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
           {SLIDES.map((_, index) => (
             <button
               key={index}
@@ -113,6 +112,6 @@ export function HeroSlider() {
           ))}
         </div>
       </div>
-    </Card>
+    </div>
   )
 }

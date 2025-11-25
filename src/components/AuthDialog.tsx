@@ -65,16 +65,38 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
       }
     }
 
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email: formData.email,
-      name: formData.name || formData.email.split('@')[0],
-      role: mode === 'select-role' ? role : 'client',
-      createdAt: new Date().toISOString(),
+    if (mode === 'select-role' && role === 'provider') {
+      const newProvider: User = {
+        id: `provider-${Date.now()}`,
+        email: formData.email,
+        name: formData.name,
+        role: 'provider',
+        createdAt: new Date().toISOString(),
+        bio: formData.bio,
+        services: formData.services.split(',').map(s => s.trim()),
+        location: formData.location,
+        availability: formData.availability || 'Flexible',
+        hourlyRate: parseFloat(formData.hourlyRate),
+        rating: 0,
+        reviewCount: 0,
+        verified: false,
+      } as any
+
+      onAuth(newProvider)
+      toast.info('Votre compte prestataire sera disponible après validation par un administrateur')
+    } else {
+      const newUser: User = {
+        id: `user-${Date.now()}`,
+        email: formData.email,
+        name: formData.name || formData.email.split('@')[0],
+        role: mode === 'select-role' ? role : 'client',
+        createdAt: new Date().toISOString(),
+      }
+
+      onAuth(newUser)
+      toast.success(`Bienvenue ${newUser.name}!`)
     }
 
-    onAuth(newUser)
-    toast.success(`Bienvenue ${newUser.name}!`)
     onOpenChange(false)
     
     setFormData({

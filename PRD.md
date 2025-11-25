@@ -55,11 +55,18 @@ A professional services marketplace connecting service providers with clients th
 - **Success criteria**: Reviews display on provider profiles, average rating calculated and displayed prominently, only verified clients can review
 
 ### Admin Dashboard
-- **Functionality**: Centralized control panel for platform oversight and management
-- **Purpose**: Enables platform governance, dispute resolution, and operational monitoring
+- **Functionality**: Centralized control panel for platform oversight, user management, and provider approval
+- **Purpose**: Enables platform governance, provider verification, user management, and operational monitoring
 - **Trigger**: Admin user login
-- **Progression**: Login as admin → Dashboard overview (stats) → Access user management/bookings/payments/disputes sections → Take actions (suspend users, refund payments, resolve disputes)
-- **Success criteria**: All users/bookings/payments visible and searchable, actions take effect immediately, audit log of admin actions maintained
+- **Progression**: Login as admin → Dashboard overview (stats: total clients, providers, bookings, revenue) → Navigate tabs (Providers/Clients/Bookings/Reviews) → Review pending provider applications → Approve/Reject providers → View all platform activity → Manage users (delete accounts if needed)
+- **Success criteria**: All users/bookings/payments/reviews visible and searchable, pending providers clearly highlighted, approve/reject actions take effect immediately, deleted users removed from system, platform statistics accurate and updated
+
+### Provider Verification System
+- **Functionality**: Admin approval required before new provider accounts become active on the platform
+- **Purpose**: Maintains platform quality and trust by vetting service providers before they can offer services
+- **Trigger**: New provider account registration
+- **Progression**: Provider submits registration with full details → Account created in "pending" state → Admin receives notification → Admin reviews provider profile (bio, services, rates, location) → Admin approves or rejects → If approved: provider can access full dashboard and appear in marketplace → If rejected: account removed from system
+- **Success criteria**: Pending providers cannot appear in marketplace searches, approved providers immediately visible, rejection removes provider account, clear status indicators for pending state
 
 ### Provider Dashboard
 - **Functionality**: Dedicated interface for providers to manage announcements, view bookings, track earnings, and monitor reviews
@@ -78,6 +85,8 @@ A professional services marketplace connecting service providers with clients th
 - **Rating manipulation**: One review per booking, verified completion required, admin can flag suspicious patterns
 - **Inactive announcements**: Providers can temporarily deactivate announcements without deletion, allowing seasonal service management
 - **Duplicate announcements**: System allows multiple announcements per provider for different service offerings
+- **Pending provider access**: Providers awaiting approval see notification explaining verification process, cannot create announcements or appear in marketplace until approved
+- **Admin user management**: Admin can delete user accounts (clients/providers), all associated data (bookings, reviews) handled appropriately, warnings before destructive actions
 
 ## Design Direction
 
