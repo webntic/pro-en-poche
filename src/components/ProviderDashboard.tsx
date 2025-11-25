@@ -1,0 +1,371 @@
+import { useState } from 'react'
+import { Card } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Switch } from '@/components/ui/switch'
+import { Announcement, Booking, Review } from '@/lib/types'
+import {
+  Calendar,
+  CreditCard,
+  Star,
+  MegaphoneSimple,
+  Plus,
+  Pencil,
+  Trash,
+  CheckCircle,
+} from '@phosphor-icons/react'
+import { format } from 'date-fns'
+import { toast } from 'sonner'
+
+interface ProviderDashboardProps {
+  providerId: string
+  announcements: Announcement[]
+  bookings: Booking[]
+  reviews: Review[]
+  onCreateAnnouncement: () => void
+  onEditAnnouncement: (announcement: Announcement) => void
+  onDeleteAnnouncement: (announcementId: string) => void
+  onToggleAnnouncementStatus: (announcementId: string, isActive: boolean) => void
+}
+
+export function ProviderDashboard({
+  providerId,
+  announcements,
+  bookings,
+  reviews,
+  onCreateAnnouncement,
+  onEditAnnouncement,
+  onDeleteAnnouncement,
+  onToggleAnnouncementStatus,
+}: ProviderDashboardProps) {
+  const providerBookings = bookings.filter((b) => b.providerId === providerId)
+  const providerReviews = reviews.filter((r) => r.providerId === providerId)
+
+  const stats = {
+    totalAnnouncements: announcements.length,
+    activeAnnouncements: announcements.filter((a) => a.isActive).length,
+    totalBookings: providerBookings.length,
+    completedBookings: providerBookings.filter((b) => b.status === 'completed').length,
+    totalEarned: providerBookings
+      .filter((b) => b.paymentStatus === 'released')
+      .reduce((sum, b) => sum + b.price, 0),
+    avgRating:
+      providerReviews.length > 0
+        ? providerReviews.reduce((sum, r) => sum + r.rating, 0) / providerReviews.length
+        : 0,
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'bg-secondary'
+      case 'completed':
+        return 'bg-green-500'
+      case 'cancelled':
+        return 'bg-destructive'
+      case 'disputed':
+        return 'bg-accent'
+      default:
+        return 'bg-muted'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'Confirmé'
+      case 'completed':
+        return 'Terminé'
+      case 'cancelled':
+        return 'Annulé'
+      case 'disputed':
+        return 'Contesté'
+      case 'pending':
+        return 'En attente'
+      default:
+        return status
+    }
+  }
+
+  const handleDelete = (announcementId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+      onDeleteAnnouncement(announcementId)
+      toast.success('Annonce supprimée avec succès')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight mb-2">Tableau de bord Prestataire</h2>
+        <p className="text-muted-foreground">Gérez vos annonces, réservations et avis</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 rounded-lg">
+              <MegaphoneSimple size={24} className="text-primary" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Annonces actives</p>
+              <p className="text-2xl font-bold">
+                {stats.activeAnnouncements} / {stats.totalAnnouncements}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-secondary/10 rounded-lg">
+              <Calendar size={24} className="text-secondary" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Réservations</p>
+              <p className="text-2xl font-bold">{stats.totalBookings}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-accent/10 rounded-lg">
+              <CreditCard size={24} className="text-accent" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Revenus totaux</p>
+              <p className="text-2xl font-bold">{stats.totalEarned}$</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-yellow-500/10 rounded-lg">
+              <Star size={24} className="text-yellow-500" weight="fill" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Note moyenne</p>
+              <p className="text-2xl font-bold">
+                {stats.avgRating > 0 ? stats.avgRating.toFixed(1) : 'N/A'}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="announcements" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="announcements">Mes annonces</TabsTrigger>
+          <TabsTrigger value="bookings">Réservations reçues</TabsTrigger>
+          <TabsTrigger value="reviews">Avis reçus</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="announcements" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              Créez et gérez vos annonces de services
+            </p>
+            <Button onClick={onCreateAnnouncement} className="gap-2">
+              <Plus size={18} />
+              Nouvelle annonce
+            </Button>
+          </div>
+
+          {announcements.length === 0 ? (
+            <Card className="p-8">
+              <div className="text-center text-muted-foreground">
+                <MegaphoneSimple size={48} className="mx-auto mb-4 text-muted" />
+                <p className="mb-4">
+                  Vous n'avez pas encore d'annonces. Créez votre première annonce pour
+                  commencer à recevoir des clients!
+                </p>
+                <Button onClick={onCreateAnnouncement} className="gap-2">
+                  <Plus size={18} />
+                  Créer ma première annonce
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Titre</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Ville</TableHead>
+                    <TableHead>Tarif/h</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Créée le</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {announcements.map((announcement) => (
+                    <TableRow key={announcement.id}>
+                      <TableCell className="font-medium max-w-xs">
+                        <div className="truncate">{announcement.title}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{announcement.category}</Badge>
+                      </TableCell>
+                      <TableCell>{announcement.location}</TableCell>
+                      <TableCell>{announcement.hourlyRate}$</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={announcement.isActive}
+                            onCheckedChange={(checked) =>
+                              onToggleAnnouncementStatus(announcement.id, checked)
+                            }
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {announcement.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(announcement.createdAt), 'dd/MM/yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => onEditAnnouncement(announcement)}
+                          >
+                            <Pencil size={16} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete(announcement.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="bookings" className="space-y-4">
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Prix</TableHead>
+                  <TableHead>Paiement</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {providerBookings.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      Aucune réservation pour le moment. Vos clients verront vos annonces
+                      bientôt!
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  providerBookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell className="font-medium">Client #{booking.clientId.slice(-6)}</TableCell>
+                      <TableCell>{booking.serviceType}</TableCell>
+                      <TableCell>
+                        {format(new Date(booking.date), 'dd MMM yyyy')} à {booking.time}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(booking.status)}>
+                          {getStatusLabel(booking.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{booking.price}$</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            booking.paymentStatus === 'released'
+                              ? 'default'
+                              : booking.paymentStatus === 'held'
+                              ? 'secondary'
+                              : 'outline'
+                          }
+                        >
+                          {booking.paymentStatus === 'released'
+                            ? 'Libéré'
+                            : booking.paymentStatus === 'held'
+                            ? 'En garantie'
+                            : booking.paymentStatus === 'refunded'
+                            ? 'Remboursé'
+                            : 'En attente'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reviews" className="space-y-4">
+          {providerReviews.length === 0 ? (
+            <Card className="p-8">
+              <div className="text-center text-muted-foreground">
+                <Star size={48} className="mx-auto mb-4 text-muted" />
+                <p>
+                  Aucun avis pour le moment. Complétez des services pour recevoir vos premiers
+                  avis!
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {providerReviews.map((review) => (
+                <Card key={review.id} className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="font-semibold">Client #{review.clientId.slice(-6)}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(review.createdAt), 'dd MMM yyyy')}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={18}
+                          weight={star <= review.rating ? 'fill' : 'regular'}
+                          className={star <= review.rating ? 'text-accent' : 'text-muted'}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {review.comment && <p className="text-sm">{review.comment}</p>}
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}

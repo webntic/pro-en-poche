@@ -18,8 +18,10 @@ import { BookingDialog } from '@/components/BookingDialog'
 import { AuthDialog } from '@/components/AuthDialog'
 import { ReviewDialog } from '@/components/ReviewDialog'
 import { Dashboard } from '@/components/Dashboard'
+import { ProviderDashboard } from '@/components/ProviderDashboard'
+import { AnnouncementDialog } from '@/components/AnnouncementDialog'
 import { HeroSlider } from '@/components/HeroSlider'
-import { User, ServiceProvider, Booking, Review } from '@/lib/types'
+import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
 
@@ -28,12 +30,15 @@ function App() {
   const [providers, setProviders] = useKV<ServiceProvider[]>('providers', [])
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [reviews, setReviews] = useKV<Review[]>('reviews', [])
+  const [announcements, setAnnouncements] = useKV<Announcement[]>('announcements', [])
 
   const [authOpen, setAuthOpen] = useState(false)
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
+  const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
   
@@ -130,6 +135,52 @@ function App() {
     toast.success('Avis soumis! Le paiement a été libéré au prestataire.')
   }
 
+  const handleCreateAnnouncement = () => {
+    setEditingAnnouncement(null)
+    setAnnouncementDialogOpen(true)
+  }
+
+  const handleEditAnnouncement = (announcement: Announcement) => {
+    setEditingAnnouncement(announcement)
+    setAnnouncementDialogOpen(true)
+  }
+
+  const handleSubmitAnnouncement = (announcementData: Omit<Announcement, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (editingAnnouncement) {
+      setAnnouncements((current) =>
+        (current || []).map((a) =>
+          a.id === editingAnnouncement.id
+            ? { ...a, ...announcementData, updatedAt: new Date().toISOString() }
+            : a
+        )
+      )
+      toast.success('Annonce mise à jour avec succès!')
+    } else {
+      const newAnnouncement: Announcement = {
+        ...announcementData,
+        id: `announcement-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      setAnnouncements((current) => [...(current || []), newAnnouncement])
+      toast.success('Annonce créée avec succès!')
+    }
+    setEditingAnnouncement(null)
+  }
+
+  const handleDeleteAnnouncement = (announcementId: string) => {
+    setAnnouncements((current) => (current || []).filter((a) => a.id !== announcementId))
+  }
+
+  const handleToggleAnnouncementStatus = (announcementId: string, isActive: boolean) => {
+    setAnnouncements((current) =>
+      (current || []).map((a) =>
+        a.id === announcementId ? { ...a, isActive, updatedAt: new Date().toISOString() } : a
+      )
+    )
+    toast.success(isActive ? 'Annonce activée' : 'Annonce désactivée')
+  }
+
   const filteredProviders = (providers || []).filter((provider) => {
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -150,6 +201,7 @@ function App() {
 
   const userBookings = (bookings || []).filter(b => b.clientId === currentUser?.id)
   const userReviews = (reviews || []).filter(r => r.clientId === currentUser?.id)
+  const userAnnouncements = (announcements || []).filter(a => a.providerId === currentUser?.id)
 
   const userInitials = currentUser?.name
     .split(' ')
@@ -157,6 +209,8 @@ function App() {
     .join('')
     .toUpperCase()
     .slice(0, 2) || 'U'
+
+  const isProvider = currentUser?.role === 'provider'
 
   return (
     <div className="min-h-screen bg-background">
@@ -220,13 +274,26 @@ function App() {
 
       <main className="container mx-auto px-4 py-8">
         {showDashboard && currentUser ? (
-          <Dashboard
-            bookings={userBookings}
-            reviews={userReviews}
-            providers={providers || []}
-            onMarkComplete={handleMarkComplete}
-            onOpenReview={handleOpenReview}
-          />
+          isProvider ? (
+            <ProviderDashboard
+              providerId={currentUser.id}
+              announcements={userAnnouncements}
+              bookings={bookings || []}
+              reviews={reviews || []}
+              onCreateAnnouncement={handleCreateAnnouncement}
+              onEditAnnouncement={handleEditAnnouncement}
+              onDeleteAnnouncement={handleDeleteAnnouncement}
+              onToggleAnnouncementStatus={handleToggleAnnouncementStatus}
+            />
+          ) : (
+            <Dashboard
+              bookings={userBookings}
+              reviews={userReviews}
+              providers={providers || []}
+              onMarkComplete={handleMarkComplete}
+              onOpenReview={handleOpenReview}
+            />
+          )
         ) : (
           <>
             <HeroSlider />
@@ -320,6 +387,16 @@ function App() {
           providerName={(providers || []).find(p => p.id === selectedBooking.providerId)?.name || ''}
           clientId={currentUser?.id || ''}
           onSubmit={handleSubmitReview}
+        />
+      )}
+
+      {currentUser?.role === 'provider' && (
+        <AnnouncementDialog
+          open={announcementDialogOpen}
+          onOpenChange={setAnnouncementDialogOpen}
+          providerId={currentUser.id}
+          editAnnouncement={editingAnnouncement || undefined}
+          onSubmit={handleSubmitAnnouncement}
         />
       )}
 

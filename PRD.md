@@ -26,6 +26,13 @@ A professional services marketplace connecting service providers with clients th
 - **Progression**: View service categories → Select category → Apply filters (rating, location, price range) → Browse provider cards → Click for detailed profile
 - **Success criteria**: Results update instantly on filter changes, empty states guide users, provider cards show key info (name, rating, price, service)
 
+### Provider Announcement Creation
+- **Functionality**: Providers can create, edit, and manage service announcements with detailed information
+- **Purpose**: Allows service providers to advertise their offerings with custom pricing, availability, and descriptions
+- **Trigger**: "Nouvelle annonce" button in Provider Dashboard
+- **Progression**: Provider logs in → Access dashboard → Click create announcement → Fill details (title, description, category, hourly rate, location, availability, services) → Submit → Announcement appears in marketplace
+- **Success criteria**: Announcement form validates all required fields, providers can edit/delete announcements, toggle active/inactive status, announcements display in marketplace when active
+
 ### Direct Booking System
 - **Functionality**: Calendar-based appointment scheduling with instant confirmation
 - **Purpose**: Eliminates communication friction by allowing immediate service booking with clear availability
@@ -54,6 +61,13 @@ A professional services marketplace connecting service providers with clients th
 - **Progression**: Login as admin → Dashboard overview (stats) → Access user management/bookings/payments/disputes sections → Take actions (suspend users, refund payments, resolve disputes)
 - **Success criteria**: All users/bookings/payments visible and searchable, actions take effect immediately, audit log of admin actions maintained
 
+### Provider Dashboard
+- **Functionality**: Dedicated interface for providers to manage announcements, view bookings, track earnings, and monitor reviews
+- **Purpose**: Gives providers complete control over their service offerings and business performance
+- **Trigger**: Provider user login and dashboard access
+- **Progression**: Login as provider → View stats (announcements, bookings, earnings, rating) → Manage announcements tab → View received bookings → Read customer reviews
+- **Success criteria**: All provider-specific data isolated and displayed, real-time updates on bookings and payments, announcement CRUD operations work flawlessly
+
 ## Edge Case Handling
 
 - **No-show appointments**: Automatic notification system prompts client to confirm/cancel 24h before, cancellation policy clearly stated during booking
@@ -62,6 +76,8 @@ A professional services marketplace connecting service providers with clients th
 - **Failed payments**: Clear error messages with retry option, booking held temporarily (15 min) before release
 - **Incomplete profiles**: Progressive disclosure prompts users to complete profiles for full access, visible completion percentage
 - **Rating manipulation**: One review per booking, verified completion required, admin can flag suspicious patterns
+- **Inactive announcements**: Providers can temporarily deactivate announcements without deletion, allowing seasonal service management
+- **Duplicate announcements**: System allows multiple announcements per provider for different service offerings
 
 ## Design Direction
 

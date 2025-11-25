@@ -58,3 +58,18 @@ export interface ServiceCategory {
   name: string
   icon: string
 }
+
+export interface Announcement {
+  id: string
+  providerId: string
+  title: string
+  description: string
+  category: string
+  hourlyRate: number
+  location: string
+  availability: string
+  services: string[]
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
