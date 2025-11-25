@@ -21,6 +21,7 @@ import { Dashboard } from '@/components/Dashboard'
 import { ProviderDashboard } from '@/components/ProviderDashboard'
 import { AnnouncementDialog } from '@/components/AnnouncementDialog'
 import { HeroSlider } from '@/components/HeroSlider'
+import { Logo } from '@/components/Logo'
 import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -221,7 +222,7 @@ function App() {
               onClick={() => setShowDashboard(false)}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <div className="text-2xl font-bold text-primary">Pro En Poche</div>
+              <Logo className="h-10 w-auto" />
             </button>
 
             <div className="flex items-center gap-4">
