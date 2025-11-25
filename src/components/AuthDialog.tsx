@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -23,11 +23,22 @@ interface AuthDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onAuth: (user: User) => void
+  initialRole?: UserRole
 }
 
-export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
+export function AuthDialog({ open, onOpenChange, onAuth, initialRole }: AuthDialogProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'select-role'>('signin')
-  const [role, setRole] = useState<UserRole>('client')
+  const [role, setRole] = useState<UserRole>(initialRole || 'client')
+
+  useEffect(() => {
+    if (open && initialRole === 'provider') {
+      setMode('select-role')
+      setRole('provider')
+    } else if (open && !initialRole) {
+      setMode('signin')
+      setRole('client')
+    }
+  }, [open, initialRole])
   
   const [formData, setFormData] = useState({
     name: '',
@@ -120,11 +131,33 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
 
   const handleBackToSignup = () => {
     setMode('signup')
-    setRole('client')
+    setRole(initialRole || 'client')
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setMode('signin')
+      setRole(initialRole || 'client')
+    }
+    onOpenChange(open)
+  }
+
+  const handleTabChange = (v: string) => {
+    if (v === 'signup') {
+      if (initialRole === 'provider') {
+        setMode('select-role')
+        setRole('provider')
+      } else {
+        setMode('signup')
+        setRole('client')
+      }
+    } else {
+      setMode(v as 'signin' | 'signup')
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
@@ -153,14 +186,7 @@ export function AuthDialog({ open, onOpenChange, onAuth }: AuthDialogProps) {
 
         <Tabs 
           value={mode === 'select-role' ? 'signup' : mode} 
-          onValueChange={(v) => {
-            if (v === 'signup') {
-              setMode('signup')
-              setRole('client')
-            } else {
-              setMode(v as 'signin' | 'signup')
-            }
-          }}
+          onValueChange={handleTabChange}
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Connexion</TabsTrigger>

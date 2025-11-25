@@ -3,7 +3,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Check } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
 
-export function PricingSection() {
+interface PricingSectionProps {
+  onBuyPlan?: (planName: string) => void
+}
+
+export function PricingSection({ onBuyPlan }: PricingSectionProps) {
   const plans = [
     {
       name: 'ESSENTIEL',
@@ -125,6 +129,7 @@ export function PricingSection() {
                   className="w-full"
                   variant={plan.featured ? 'default' : 'outline'}
                   size="lg"
+                  onClick={() => onBuyPlan?.(plan.name)}
                 >
                   Buy Plan
                 </Button>

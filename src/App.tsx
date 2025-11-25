@@ -42,6 +42,7 @@ function App() {
   const [announcements, setAnnouncements] = useKV<Announcement[]>('announcements', [])
 
   const [authOpen, setAuthOpen] = useState(false)
+  const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
@@ -92,11 +93,24 @@ function App() {
   const handleBook = (provider: ServiceProvider) => {
     if (!currentUser) {
       toast.error('Veuillez vous connecter pour réserver un service')
+      setAuthInitialRole(undefined)
       setAuthOpen(true)
       return
     }
     setSelectedProvider(provider)
     setBookingDialogOpen(true)
+  }
+
+  const handleBuyPlan = (planName: string) => {
+    if (!currentUser) {
+      setAuthInitialRole('provider')
+      setAuthOpen(true)
+      toast.info('Créez votre compte prestataire pour accéder aux plans')
+    } else if (currentUser.role !== 'provider') {
+      toast.error('Seuls les prestataires peuvent souscrire à un plan')
+    } else {
+      toast.success(`Plan ${planName} sélectionné! Fonctionnalité de paiement à venir.`)
+    }
   }
 
   const handleConfirmBooking = (bookingData: Omit<Booking, 'id' | 'createdAt'>) => {
@@ -343,7 +357,10 @@ function App() {
                   </DropdownMenu>
                 </>
               ) : (
-                <Button onClick={() => setAuthOpen(true)} className="gap-2">
+                <Button onClick={() => {
+                  setAuthInitialRole(undefined)
+                  setAuthOpen(true)
+                }} className="gap-2">
                   <UserIcon size={18} />
                   Connexion
                 </Button>
@@ -391,7 +408,7 @@ function App() {
       ) : activeSection === 'services' ? (
         <ServicesSection />
       ) : activeSection === 'tarifs' ? (
-        <PricingSection />
+        <PricingSection onBuyPlan={handleBuyPlan} />
       ) : activeSection === 'contact' ? (
         <ContactSection />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
@@ -474,7 +491,12 @@ function App() {
         </>
       ) : null}
 
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} onAuth={handleAuth} />
+      <AuthDialog 
+        open={authOpen} 
+        onOpenChange={setAuthOpen} 
+        onAuth={handleAuth} 
+        initialRole={authInitialRole}
+      />
       
       <BookingDialog
         open={bookingDialogOpen}
