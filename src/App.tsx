@@ -25,6 +25,7 @@ import { HeroSlider } from '@/components/HeroSlider'
 import { Logo } from '@/components/Logo'
 import { AboutSection } from '@/components/AboutSection'
 import { ServicesSection } from '@/components/ServicesSection'
+import { PricingSection } from '@/components/PricingSection'
 import { ContactSection } from '@/components/ContactSection'
 import { BecomeProviderSection } from '@/components/BecomeProviderSection'
 import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
@@ -49,7 +50,7 @@ function App() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
-  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'prestataires' | 'contact'>('accueil')
+  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'contact'>('accueil')
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'Tous les services',
@@ -282,6 +283,7 @@ function App() {
                 { key: 'accueil' as const, label: 'Accueil' },
                 { key: 'apropos' as const, label: 'À Propos' },
                 { key: 'services' as const, label: 'Services' },
+                { key: 'tarifs' as const, label: 'Tarifs' },
                 { key: 'prestataires' as const, label: 'Prestataires' },
                 { key: 'contact' as const, label: 'Contact' },
               ].map((item) => (
@@ -388,6 +390,8 @@ function App() {
         <AboutSection />
       ) : activeSection === 'services' ? (
         <ServicesSection />
+      ) : activeSection === 'tarifs' ? (
+        <PricingSection />
       ) : activeSection === 'contact' ? (
         <ContactSection />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
