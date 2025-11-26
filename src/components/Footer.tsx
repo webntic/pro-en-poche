@@ -1,6 +1,7 @@
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { EnvelopeSimple, Question, Phone, MapPin } from '@phosphor-icons/react'
+import logoImage from '@/assets/images/logo.svg'
 
 interface FooterProps {
   onNavigate: (section: 'faq') => void
@@ -65,7 +66,7 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">À propos</h3>
+            <img src={logoImage} alt="Pro En Poche" className="h-12 w-auto mb-2" />
             <p className="text-sm text-muted-foreground">
               Pro En Poche est la plateforme qui connecte les professionnels de services avec les clients partout au Canada.
             </p>
