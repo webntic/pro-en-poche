@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { EnvelopeSimple, Question, Phone, MapPin } from '@phosphor-icons/react'
+import { EnvelopeSimple, Question, Phone, MapPin, FacebookLogo, InstagramLogo } from '@phosphor-icons/react'
 import logoImage from '@/assets/images/logo.svg'
 
 interface FooterProps {
@@ -73,6 +73,26 @@ export function Footer({ onNavigate }: FooterProps) {
             <p className="text-sm text-muted-foreground">
               Une solution fiable, sécurisée et transparente pour tous vos besoins en services professionnels.
             </p>
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="https://www.facebook.com/ProenPoche"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Suivez-nous sur Facebook"
+              >
+                <FacebookLogo size={28} weight="fill" />
+              </a>
+              <a
+                href="https://www.instagram.com/proenpoche"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Suivez-nous sur Instagram"
+              >
+                <InstagramLogo size={28} weight="fill" />
+              </a>
+            </div>
           </div>
         </div>
 
