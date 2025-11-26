@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
@@ -11,8 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card } from '@/components/ui/card'
-import { X } from '@phosphor-icons/react'
-import { format } from 'date-fns'
+import { X, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { format, addWeeks, startOfWeek, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 export interface AvailabilitySlot {
@@ -36,17 +35,47 @@ const TIME_OPTIONS = [
 ]
 
 export function AvailabilityCalendar({ value, onChange }: AvailabilityCalendarProps) {
-  const [selectedDates, setSelectedDates] = useState<Date[] | undefined>(undefined)
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
+    startOfWeek(new Date(), { weekStartsOn: 1 })
+  )
+  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set())
   const [startTime, setStartTime] = useState<string>('09:00')
   const [endTime, setEndTime] = useState<string>('17:00')
 
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i))
+
+  const goToPreviousWeek = () => {
+    setCurrentWeekStart(addWeeks(currentWeekStart, -1))
+  }
+
+  const goToNextWeek = () => {
+    setCurrentWeekStart(addWeeks(currentWeekStart, 1))
+  }
+
+  const goToToday = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))
+  }
+
+  const toggleDate = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd')
+    const newSelected = new Set(selectedDates)
+    
+    if (newSelected.has(dateStr)) {
+      newSelected.delete(dateStr)
+    } else {
+      newSelected.add(dateStr)
+    }
+    
+    setSelectedDates(newSelected)
+  }
+
   const handleAddSlots = () => {
-    if (!selectedDates || selectedDates.length === 0) {
+    if (selectedDates.size === 0) {
       return
     }
 
-    const newSlots: AvailabilitySlot[] = selectedDates.map((date) => ({
-      date: format(date, 'yyyy-MM-dd'),
+    const newSlots: AvailabilitySlot[] = Array.from(selectedDates).map((dateStr) => ({
+      date: dateStr,
       startTime,
       endTime,
     }))
@@ -55,7 +84,7 @@ export function AvailabilityCalendar({ value, onChange }: AvailabilityCalendarPr
     const uniqueNewSlots = newSlots.filter((slot) => !existingDates.includes(slot.date))
 
     onChange([...value, ...uniqueNewSlots])
-    setSelectedDates(undefined)
+    setSelectedDates(new Set())
   }
 
   const handleRemoveSlot = (index: number) => {
@@ -66,20 +95,96 @@ export function AvailabilityCalendar({ value, onChange }: AvailabilityCalendarPr
     new Date(a.date).getTime() - new Date(b.date).getTime()
   )
 
+  const isDateInPast = (date: Date) => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return date < today
+  }
+
   return (
     <div className="space-y-4">
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-3">
           <Label>Sélectionnez les dates</Label>
           <Card className="p-4">
-            <Calendar
-              mode="multiple"
-              selected={selectedDates}
-              onSelect={setSelectedDates}
-              locale={fr}
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-              className="rounded-md"
-            />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={goToPreviousWeek}
+                >
+                  <CaretLeft size={16} />
+                </Button>
+                
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-medium">
+                    {format(currentWeekStart, 'MMMM yyyy', { locale: fr })}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={goToToday}
+                    className="text-xs h-6"
+                  >
+                    Aujourd'hui
+                  </Button>
+                </div>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={goToNextWeek}
+                >
+                  <CaretRight size={16} />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1">
+                {weekDays.map((date) => {
+                  const dateStr = format(date, 'yyyy-MM-dd')
+                  const isSelected = selectedDates.has(dateStr)
+                  const isPast = isDateInPast(date)
+                  const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+                  
+                  return (
+                    <div key={dateStr} className="flex flex-col items-center">
+                      <span className="text-xs text-muted-foreground mb-1">
+                        {format(date, 'EEE', { locale: fr })}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => !isPast && toggleDate(date)}
+                        disabled={isPast}
+                        className={`
+                          w-10 h-10 rounded-md text-sm font-medium
+                          transition-colors
+                          ${isPast
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
+                            : isSelected
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            : isToday
+                            ? 'bg-accent text-accent-foreground hover:bg-accent/90'
+                            : 'bg-background border border-border hover:bg-muted'
+                          }
+                        `}
+                      >
+                        {format(date, 'd')}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {selectedDates.size > 0 && (
+                <div className="text-sm text-muted-foreground">
+                  {selectedDates.size} date{selectedDates.size > 1 ? 's' : ''} sélectionnée{selectedDates.size > 1 ? 's' : ''}
+                </div>
+              )}
+            </div>
           </Card>
         </div>
 
@@ -121,7 +226,7 @@ export function AvailabilityCalendar({ value, onChange }: AvailabilityCalendarPr
             <Button
               type="button"
               onClick={handleAddSlots}
-              disabled={!selectedDates || selectedDates.length === 0}
+              disabled={selectedDates.size === 0}
               className="w-full"
             >
               Ajouter les disponibilités
