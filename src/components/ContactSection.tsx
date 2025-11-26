@@ -23,53 +23,63 @@ export function ContactSection() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Contactez-nous</h1>
-          <p className="text-xl text-muted-foreground">
-            Une question ? Notre équipe est là pour vous aider
-          </p>
+      <div className="max-w-6xl mx-auto space-y-12">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight premium-text-gradient">Contactez-nous</h1>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Une question ? Notre équipe est là pour vous aider. Nous nous engageons à vous répondre dans les plus brefs délais.
+            </p>
+            
+            <div className="grid sm:grid-cols-3 gap-6 pt-4">
+              <Card className="p-6 text-center space-y-3 premium-card">
+                <div className="flex justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <EnvelopeSimple size={24} className="text-primary" weight="duotone" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Email</h3>
+                  <p className="text-sm text-muted-foreground">contact@proenpoche.ca</p>
+                </div>
+              </Card>
+
+              <Card className="p-6 text-center space-y-3 premium-card">
+                <div className="flex justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Phone size={24} className="text-primary" weight="duotone" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Téléphone</h3>
+                  <p className="text-sm text-muted-foreground">1-800-PRO-POCHE</p>
+                </div>
+              </Card>
+
+              <Card className="p-6 text-center space-y-3 premium-card">
+                <div className="flex justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MapPin size={24} className="text-primary" weight="duotone" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Adresse</h3>
+                  <p className="text-sm text-muted-foreground">Montréal, QC, Canada</p>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=800&q=80"
+              alt="Support client professionnel"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <Card className="p-6 text-center space-y-3">
-            <div className="flex justify-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <EnvelopeSimple size={24} className="text-primary" weight="duotone" />
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Email</h3>
-              <p className="text-sm text-muted-foreground">contact@proenpoche.ca</p>
-            </div>
-          </Card>
-
-          <Card className="p-6 text-center space-y-3">
-            <div className="flex justify-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Phone size={24} className="text-primary" weight="duotone" />
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Téléphone</h3>
-              <p className="text-sm text-muted-foreground">1-800-PRO-POCHE</p>
-            </div>
-          </Card>
-
-          <Card className="p-6 text-center space-y-3">
-            <div className="flex justify-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapPin size={24} className="text-primary" weight="duotone" />
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Adresse</h3>
-              <p className="text-sm text-muted-foreground">Montréal, QC, Canada</p>
-            </div>
-          </Card>
-        </div>
-
-        <Card className="p-8">
+        <Card className="p-8 premium-card">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">

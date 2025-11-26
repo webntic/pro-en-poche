@@ -107,14 +107,31 @@ export function ServicesSection() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="relative h-[400px] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&q=80"
+          alt="Équipe de professionnels au travail"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70">
+          <div className="container mx-auto px-4 h-full flex items-center justify-center">
+            <div className="text-center text-white space-y-6 max-w-3xl">
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight drop-shadow-2xl">
+                Nos Services Professionnels
+              </h1>
+              <p className="text-xl md:text-2xl opacity-95 drop-shadow-lg">
+                Une large gamme de services pour faciliter votre quotidien
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-4 animate-fadeIn">
-            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Nos Services
-            </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Une large gamme de services professionnels pour faciliter votre quotidien. Des experts qualifiés à votre service.
+              Des experts qualifiés à votre service dans tous les domaines
             </p>
           </div>
 

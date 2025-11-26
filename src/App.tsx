@@ -35,6 +35,9 @@ import { BecomeProviderSection } from '@/components/BecomeProviderSection'
 import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
 import { FAQSection } from '@/components/FAQSection'
 import { Footer } from '@/components/Footer'
+import { PopularCategoriesSection } from '@/components/PopularCategoriesSection'
+import { TestimonialsSection } from '@/components/TestimonialsSection'
+import { StatsSection } from '@/components/StatsSection'
 import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
 import { ProfileEditDialog } from '@/components/ProfileEditDialog'
 import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, ChatMessage, ChatConversation } from '@/lib/types'
@@ -688,6 +691,9 @@ function App() {
             <>
               <HeroSlider />
               <WhyChooseUsSection />
+              <PopularCategoriesSection />
+              <StatsSection />
+              <TestimonialsSection />
               <BecomeProviderSection />
             </>
           )}
