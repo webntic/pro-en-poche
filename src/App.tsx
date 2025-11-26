@@ -28,6 +28,9 @@ import { ServicesSection } from '@/components/ServicesSection'
 import { PricingSection } from '@/components/PricingSection'
 import { ContactSection } from '@/components/ContactSection'
 import { BecomeProviderSection } from '@/components/BecomeProviderSection'
+import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
+import { FAQSection } from '@/components/FAQSection'
+import { Footer } from '@/components/Footer'
 import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -51,7 +54,7 @@ function App() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
-  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'contact'>('accueil')
+  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'contact' | 'faq'>('accueil')
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'Tous les services',
@@ -309,8 +312,14 @@ function App() {
   const isAdmin = currentUser?.role === 'admin'
   const allUsers = [...(users || []), ...(providers || [])]
 
+  const handleFooterNavigate = (section: 'contact' | 'faq') => {
+    setShowDashboard(false)
+    setActiveSection(section)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-8">
@@ -445,11 +454,14 @@ function App() {
         <PricingSection onBuyPlan={handleBuyPlan} />
       ) : activeSection === 'contact' ? (
         <ContactSection />
+      ) : activeSection === 'faq' ? (
+        <FAQSection />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
         <>
           {activeSection === 'accueil' && (
             <>
               <HeroSlider />
+              <WhyChooseUsSection />
               <BecomeProviderSection />
             </>
           )}
@@ -561,6 +573,8 @@ function App() {
           onSubmit={handleSubmitAnnouncement}
         />
       )}
+
+      <Footer onNavigate={handleFooterNavigate} />
 
       <Toaster />
     </div>
