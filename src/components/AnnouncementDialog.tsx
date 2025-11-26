@@ -23,6 +23,7 @@ import { Announcement } from '@/lib/types'
 import { CANADIAN_CITIES, SERVICE_CATEGORIES } from '@/lib/demo-data'
 import { X } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { AvailabilityCalendar, AvailabilitySlot } from '@/components/AvailabilityCalendar'
 
 interface AnnouncementDialogProps {
   open: boolean
@@ -44,7 +45,7 @@ export function AnnouncementDialog({
   const [category, setCategory] = useState('')
   const [hourlyRate, setHourlyRate] = useState('')
   const [location, setLocation] = useState('')
-  const [availability, setAvailability] = useState('')
+  const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([])
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [newService, setNewService] = useState('')
 
@@ -55,7 +56,7 @@ export function AnnouncementDialog({
       setCategory(editAnnouncement.category)
       setHourlyRate(editAnnouncement.hourlyRate.toString())
       setLocation(editAnnouncement.location)
-      setAvailability(editAnnouncement.availability)
+      setAvailabilitySlots(editAnnouncement.availabilitySlots || [])
       setSelectedServices(editAnnouncement.services)
     } else {
       resetForm()
@@ -68,7 +69,7 @@ export function AnnouncementDialog({
     setCategory('')
     setHourlyRate('')
     setLocation('')
-    setAvailability('')
+    setAvailabilitySlots([])
     setSelectedServices([])
     setNewService('')
   }
@@ -105,14 +106,16 @@ export function AnnouncementDialog({
       toast.error('Veuillez sélectionner une ville')
       return
     }
-    if (!availability.trim()) {
-      toast.error('Veuillez entrer vos disponibilités')
+    if (availabilitySlots.length === 0) {
+      toast.error('Veuillez ajouter au moins une disponibilité')
       return
     }
     if (selectedServices.length === 0) {
       toast.error('Veuillez ajouter au moins un service')
       return
     }
+
+    const availabilitySummary = `${availabilitySlots.length} créneau${availabilitySlots.length > 1 ? 'x' : ''} disponible${availabilitySlots.length > 1 ? 's' : ''}`
 
     onSubmit({
       providerId,
@@ -121,7 +124,8 @@ export function AnnouncementDialog({
       category,
       hourlyRate: parseFloat(hourlyRate),
       location,
-      availability: availability.trim(),
+      availability: availabilitySummary,
+      availabilitySlots,
       services: selectedServices,
       isActive: editAnnouncement?.isActive ?? true,
     })
@@ -211,16 +215,14 @@ export function AnnouncementDialog({
                 onChange={(e) => setHourlyRate(e.target.value)}
               />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="availability">Disponibilités *</Label>
-              <Input
-                id="availability"
-                placeholder="Ex: Lun-Ven, 8h-18h"
-                value={availability}
-                onChange={(e) => setAvailability(e.target.value)}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>Calendrier de disponibilités *</Label>
+            <AvailabilityCalendar
+              value={availabilitySlots}
+              onChange={setAvailabilitySlots}
+            />
           </div>
 
           <div className="space-y-2">

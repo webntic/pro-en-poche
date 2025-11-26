@@ -69,6 +69,12 @@ export interface ServiceCategory {
   icon: string
 }
 
+export interface AvailabilitySlot {
+  date: string
+  startTime: string
+  endTime: string
+}
+
 export interface Announcement {
   id: string
   providerId: string
@@ -78,6 +84,7 @@ export interface Announcement {
   hourlyRate: number
   location: string
   availability: string
+  availabilitySlots?: AvailabilitySlot[]
   services: string[]
   isActive: boolean
   createdAt: string
