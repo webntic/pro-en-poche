@@ -41,8 +41,11 @@ import { StatsSection } from '@/components/StatsSection'
 import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
 import { ProfileEditDialog } from '@/components/ProfileEditDialog'
 import { CookieConsent } from '@/components/CookieConsent'
-import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, ChatMessage, ChatConversation } from '@/lib/types'
+import { ContentEditToggle } from '@/components/ContentEditToggle'
+import { InlineEditor } from '@/components/InlineEditor'
+import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, SiteContent, ChatMessage, ChatConversation } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
+import { DEFAULT_SITE_CONTENT } from '@/lib/default-content'
 import { toast } from 'sonner'
 import logoImage from '@/assets/images/logo.svg'
 
@@ -70,6 +73,8 @@ function App() {
     },
     updatedAt: new Date().toISOString(),
   })
+  const [siteContent, setSiteContent] = useKV<SiteContent>('site-content', DEFAULT_SITE_CONTENT)
+  const [contentEditMode, setContentEditMode] = useState(false)
 
   const [authOpen, setAuthOpen] = useState(false)
   const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
@@ -396,6 +401,30 @@ function App() {
     setProviders((current) => (current || []).filter((p) => p.id !== userId))
   }
 
+  const handleUpdateContent = (path: string[], value: string) => {
+    setSiteContent((current) => {
+      if (!current) return DEFAULT_SITE_CONTENT
+      const newContent = JSON.parse(JSON.stringify(current))
+      let target: any = newContent
+      
+      for (let i = 0; i < path.length - 1; i++) {
+        target = target[path[i]]
+      }
+      
+      const lastKey = path[path.length - 1]
+      
+      try {
+        target[lastKey] = JSON.parse(value)
+      } catch {
+        target[lastKey] = value
+      }
+      
+      return newContent
+    })
+    
+    toast.success('Contenu mis à jour avec succès!')
+  }
+
   const filteredProviders = (providers || []).filter((provider) => {
     if (!provider.verified) return false
     
@@ -681,13 +710,21 @@ function App() {
           )}
         </main>
       ) : activeSection === 'apropos' ? (
-        <AboutSection />
+        <AboutSection
+          content={siteContent?.about}
+          onUpdateContent={handleUpdateContent}
+          editMode={contentEditMode}
+        />
       ) : activeSection === 'services' ? (
         <ServicesSection />
       ) : activeSection === 'tarifs' ? (
         <PricingSection onBuyPlan={handleBuyPlan} />
       ) : activeSection === 'faq' ? (
-        <FAQSection />
+        <FAQSection
+          content={siteContent?.faq}
+          onUpdateContent={handleUpdateContent}
+          editMode={contentEditMode}
+        />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
         <>
           {activeSection === 'accueil' && (
@@ -703,13 +740,22 @@ function App() {
 
           <main className="container mx-auto px-6 py-12">
             <div className="mb-12 text-center space-y-6">
-              <h1 className="text-6xl font-bold tracking-tight mb-6 premium-text-gradient leading-tight">
-                Trouvez des Services Professionnels
-                <br />
-                près de Chez Vous
+              <h1 className="text-6xl font-bold tracking-tight mb-6 premium-text-gradient leading-tight whitespace-pre-line">
+                <InlineEditor
+                  value={siteContent?.hero.mainTitle || ''}
+                  onSave={(value) => handleUpdateContent(['hero', 'mainTitle'], value)}
+                  multiline
+                  className="text-6xl font-bold tracking-tight premium-text-gradient leading-tight"
+                  editMode={contentEditMode}
+                />
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Connectez-vous avec des professionnels vérifiés partout au Canada
+                <InlineEditor
+                  value={siteContent?.hero.subtitle || ''}
+                  onSave={(value) => handleUpdateContent(['hero', 'subtitle'], value)}
+                  className="text-xl text-muted-foreground"
+                  editMode={contentEditMode}
+                />
               </p>
 
               <div className="max-w-2xl mx-auto pt-4">
@@ -720,7 +766,7 @@ function App() {
                     className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
                   />
                   <Input
-                    placeholder="Recherchez des services ou des professionnels..."
+                    placeholder={siteContent?.hero.searchPlaceholder || 'Recherchez...'}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-14 h-14 text-base rounded-full border-2 hover:border-primary/30 focus:border-primary transition-all duration-300 elegant-shadow"
@@ -850,6 +896,13 @@ function App() {
           onOpenChange={setProfileEditOpen}
           user={currentUser}
           onSave={handleUpdateProfile}
+        />
+      )}
+
+      {isSuperAdmin && !showDashboard && !showProviderProfile && !showAuthPage && !showProviderSuccess && (
+        <ContentEditToggle
+          isEditing={contentEditMode}
+          onToggle={() => setContentEditMode(!contentEditMode)}
         />
       )}
 

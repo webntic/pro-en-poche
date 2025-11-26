@@ -7,8 +7,42 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { InlineEditor } from '@/components/InlineEditor'
+import { SiteContent } from '@/lib/types'
 
-export function AboutSection() {
+interface AboutSectionProps {
+  content?: SiteContent['about']
+  onUpdateContent?: (path: string[], value: string) => void
+  editMode?: boolean
+}
+
+export function AboutSection({ content, onUpdateContent, editMode = false }: AboutSectionProps) {
+  const defaultContent = {
+    title: 'Votre solution maison tout-en-un',
+    description: 'De la petite réparation aux gros travaux, trouvez le bon professionnel en quelques clics. Grâce à ProenPoche, mettez-vous en relation avec des prestataires qualifiés.',
+    features: [
+      {
+        title: 'Experts vérifiés et assurés',
+        description: 'Tous nos prestataires sont rigoureusement contrôlés et possèdent les assurances nécessaires',
+      },
+      {
+        title: 'Des années d\'expérience',
+        description: 'Des professionnels expérimentés avec un savoir-faire reconnu dans leur domaine',
+      },
+      {
+        title: 'Engagés pour la qualité',
+        description: 'Un engagement fort pour vous offrir des prestations de qualité supérieure',
+      },
+      {
+        title: 'Satisfaire nos clients',
+        description: 'Votre satisfaction est notre priorité absolue, nous nous engageons à vous offrir le meilleur service',
+      },
+    ],
+  }
+
+  const sectionContent = content || defaultContent
+  const icons = [Shield, Clock, CheckCircle, Heart]
+
   return (
     <div className="bg-background">
       <section className="relative bg-gradient-to-br from-primary/10 via-secondary/5 to-background py-24">
@@ -17,11 +51,29 @@ export function AboutSection() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-8">
                 <h1 className="text-6xl font-bold tracking-tight leading-tight premium-text-gradient">
-                  Votre solution maison tout-en-un
+                  {onUpdateContent && editMode ? (
+                    <InlineEditor
+                      value={sectionContent.title}
+                      onSave={(value) => onUpdateContent(['about', 'title'], value)}
+                      className="text-6xl font-bold tracking-tight premium-text-gradient"
+                      editMode={editMode}
+                    />
+                  ) : (
+                    sectionContent.title
+                  )}
                 </h1>
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                  De la petite réparation aux gros travaux, trouvez le bon professionnel en quelques clics. 
-                  Grâce à ProenPoche, mettez-vous en relation avec des prestataires qualifiés.
+                  {onUpdateContent && editMode ? (
+                    <InlineEditor
+                      value={sectionContent.description}
+                      onSave={(value) => onUpdateContent(['about', 'description'], value)}
+                      multiline
+                      className="text-xl text-muted-foreground"
+                      editMode={editMode}
+                    />
+                  ) : (
+                    sectionContent.description
+                  )}
                 </p>
               </div>
               <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-primary/20">
@@ -40,38 +92,51 @@ export function AboutSection() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                {
-                  icon: Shield,
-                  title: 'Experts vérifiés et assurés',
-                  description: 'Tous nos prestataires sont rigoureusement contrôlés et possèdent les assurances nécessaires',
-                },
-                {
-                  icon: Clock,
-                  title: 'Des années d\'expérience',
-                  description: 'Des professionnels expérimentés avec un savoir-faire reconnu dans leur domaine',
-                },
-                {
-                  icon: CheckCircle,
-                  title: 'Engagés pour la qualité',
-                  description: 'Un engagement fort pour vous offrir des prestations de qualité supérieure',
-                },
-                {
-                  icon: Heart,
-                  title: 'Une vraie volonté d\'aider',
-                  description: 'Des professionnels passionnés, à votre écoute pour répondre à vos besoins',
-                },
-              ].map((item, index) => (
-                <Card key={index} className="premium-card p-8 text-center space-y-4 border-2 hover:border-primary/50 transition-all">
-                  <div className="flex justify-center">
-                    <div className="w-20 h-20 rounded-full premium-gradient flex items-center justify-center shadow-lg">
-                      <item.icon size={36} className="text-primary-foreground" weight="duotone" />
+              {sectionContent.features.map((feature, index) => {
+                const Icon = icons[index]
+                return (
+                  <Card key={index} className="premium-card p-8 text-center space-y-6">
+                    <div className="flex justify-center">
+                      <div className="h-16 w-16 rounded-2xl premium-gradient flex items-center justify-center shadow-lg">
+                        <Icon size={32} weight="duotone" className="text-white" />
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="font-bold text-lg">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-                </Card>
-              ))}
+                    <h3 className="text-xl font-semibold tracking-tight">
+                      {onUpdateContent && editMode ? (
+                        <InlineEditor
+                          value={feature.title}
+                          onSave={(value) => {
+                            const newFeatures = [...sectionContent.features]
+                            newFeatures[index] = { ...newFeatures[index], title: value }
+                            onUpdateContent(['about', 'features'], JSON.stringify(newFeatures))
+                          }}
+                          className="text-xl font-semibold"
+                          editMode={editMode}
+                        />
+                      ) : (
+                        feature.title
+                      )}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {onUpdateContent && editMode ? (
+                        <InlineEditor
+                          value={feature.description}
+                          onSave={(value) => {
+                            const newFeatures = [...sectionContent.features]
+                            newFeatures[index] = { ...newFeatures[index], description: value }
+                            onUpdateContent(['about', 'features'], JSON.stringify(newFeatures))
+                          }}
+                          multiline
+                          className="text-muted-foreground"
+                          editMode={editMode}
+                        />
+                      ) : (
+                        feature.description
+                      )}
+                    </p>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </div>

@@ -4,9 +4,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { InlineEditor } from '@/components/InlineEditor'
+import { SiteContent } from '@/lib/types'
 
-export function FAQSection() {
-  const faqs = [
+interface FAQSectionProps {
+  content?: SiteContent['faq']
+  onUpdateContent?: (path: string[], value: string) => void
+  editMode?: boolean
+}
+
+export function FAQSection({ content, onUpdateContent, editMode = false }: FAQSectionProps) {
+  const defaultFaqs = [
     {
       question: 'Comment puis-je réserver un service ?',
       answer: 'Pour réserver un service, il vous suffit de créer un compte client, de parcourir les prestataires disponibles, et de cliquer sur "Réserver" sur la fiche du professionnel de votre choix. Vous pourrez ensuite choisir la date et l\'heure qui vous conviennent.',
@@ -27,19 +35,10 @@ export function FAQSection() {
       question: 'Puis-je annuler une réservation ?',
       answer: 'Les modalités d\'annulation dépendent du prestataire choisi. Nous vous recommandons de contacter directement le prestataire en cas de besoin d\'annulation. Pour toute question, notre support est disponible pour vous accompagner.',
     },
-    {
-      question: 'Comment puis-je contacter un prestataire ?',
-      answer: 'Une fois votre réservation confirmée, vous pouvez contacter le prestataire directement via les informations de contact fournies dans votre tableau de bord.',
-    },
-    {
-      question: 'Quels sont les avantages des différents plans tarifaires ?',
-      answer: 'Le plan Basic permet de créer jusqu\'à 5 annonces, le plan Premium jusqu\'à 20 annonces avec mise en avant prioritaire, et le plan Enterprise offre des annonces illimitées avec support prioritaire et outils d\'analyse avancés.',
-    },
-    {
-      question: 'Comment fonctionne le système d\'avis ?',
-      answer: 'Après chaque prestation, les clients peuvent laisser un avis et une note sur 5 étoiles. Ces avis permettent aux autres utilisateurs de choisir les meilleurs prestataires et aident les professionnels à améliorer leurs services.',
-    },
   ]
+
+  const faqContent = content || { title: 'Foire aux Questions', subtitle: 'Trouvez rapidement des réponses à vos questions', items: defaultFaqs }
+  const faqs = faqContent.items || defaultFaqs
 
   return (
     <section className="py-16 bg-gradient-to-b from-background to-muted/20">
@@ -55,10 +54,29 @@ export function FAQSection() {
             </div>
             <div className="space-y-6 order-1 lg:order-2">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight premium-text-gradient">
-                Foire aux Questions
+                {onUpdateContent && editMode ? (
+                  <InlineEditor
+                    value={faqContent.title}
+                    onSave={(value) => onUpdateContent(['faq', 'title'], value)}
+                    className="text-4xl md:text-5xl font-bold premium-text-gradient"
+                    editMode={editMode}
+                  />
+                ) : (
+                  faqContent.title
+                )}
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Trouvez rapidement des réponses à vos questions. Notre équipe est également disponible pour vous accompagner.
+                {onUpdateContent && editMode ? (
+                  <InlineEditor
+                    value={faqContent.subtitle}
+                    onSave={(value) => onUpdateContent(['faq', 'subtitle'], value)}
+                    multiline
+                    className="text-xl text-muted-foreground"
+                    editMode={editMode}
+                  />
+                ) : (
+                  faqContent.subtitle
+                )}
               </p>
             </div>
           </div>
@@ -71,10 +89,39 @@ export function FAQSection() {
                 className="border-2 border-border rounded-xl px-6 bg-card premium-card"
               >
                 <AccordionTrigger className="text-left hover:no-underline py-5 hover:text-primary transition-colors">
-                  <span className="font-semibold text-base">{faq.question}</span>
+                  <span className="font-semibold text-base">
+                    {onUpdateContent && editMode ? (
+                      <InlineEditor
+                        value={faq.question}
+                        onSave={(value) => {
+                          const newItems = [...faqs]
+                          newItems[index] = { ...newItems[index], question: value }
+                          onUpdateContent(['faq', 'items'], JSON.stringify(newItems))
+                        }}
+                        className="font-semibold text-base"
+                        editMode={editMode}
+                      />
+                    ) : (
+                      faq.question
+                    )}
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
-                  {faq.answer}
+                  {onUpdateContent && editMode ? (
+                    <InlineEditor
+                      value={faq.answer}
+                      onSave={(value) => {
+                        const newItems = [...faqs]
+                        newItems[index] = { ...newItems[index], answer: value }
+                        onUpdateContent(['faq', 'items'], JSON.stringify(newItems))
+                      }}
+                      multiline
+                      className="text-muted-foreground"
+                      editMode={editMode}
+                    />
+                  ) : (
+                    faq.answer
+                  )}
                 </AccordionContent>
               </AccordionItem>
             ))}

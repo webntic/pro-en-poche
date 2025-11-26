@@ -140,6 +140,76 @@ export interface SiteSettings {
   updatedAt: string
 }
 
+export interface SiteContent {
+  hero: {
+    mainTitle: string
+    subtitle: string
+    searchPlaceholder: string
+  }
+  about: {
+    title: string
+    description: string
+    features: Array<{
+      title: string
+      description: string
+    }>
+  }
+  services: {
+    title: string
+    description: string
+    categories: Array<{
+      name: string
+      description: string
+    }>
+  }
+  whyChooseUs: {
+    title: string
+    subtitle: string
+    reasons: Array<{
+      title: string
+      description: string
+    }>
+  }
+  stats: {
+    providers: { label: string; value: string }
+    clients: { label: string; value: string }
+    bookings: { label: string; value: string }
+    satisfaction: { label: string; value: string }
+  }
+  testimonials: {
+    title: string
+    subtitle: string
+    items: Array<{
+      name: string
+      role: string
+      content: string
+      rating: number
+    }>
+  }
+  becomeProvider: {
+    title: string
+    subtitle: string
+    description: string
+    buttonText: string
+    benefits: Array<{
+      title: string
+      description: string
+    }>
+  }
+  faq: {
+    title: string
+    subtitle: string
+    items: Array<{
+      question: string
+      answer: string
+    }>
+  }
+  footer: {
+    description: string
+    copyright: string
+  }
+}
+
 export interface ChatMessage {
   id: string
   bookingId: string
