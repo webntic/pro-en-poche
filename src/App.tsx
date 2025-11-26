@@ -71,7 +71,7 @@ function App() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
-  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'contact' | 'faq'>('accueil')
+  const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'faq'>('accueil')
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'Tous les services',
@@ -334,7 +334,7 @@ function App() {
     setSiteSettings(newSettings)
   }
 
-  const handleFooterNavigate = (section: 'contact' | 'faq') => {
+  const handleFooterNavigate = (section: 'faq') => {
     setShowDashboard(false)
     setActiveSection(section)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -362,7 +362,6 @@ function App() {
                 { key: 'services' as const, label: 'Services' },
                 { key: 'tarifs' as const, label: 'Tarifs' },
                 { key: 'prestataires' as const, label: 'Prestataires' },
-                { key: 'contact' as const, label: 'Contact' },
               ].map((item) => (
                 <Button
                   key={item.key}
@@ -479,8 +478,6 @@ function App() {
         <ServicesSection />
       ) : activeSection === 'tarifs' ? (
         <PricingSection onBuyPlan={handleBuyPlan} />
-      ) : activeSection === 'contact' ? (
-        <ContactSection />
       ) : activeSection === 'faq' ? (
         <FAQSection />
       ) : activeSection === 'prestataires' || activeSection === 'accueil' ? (
