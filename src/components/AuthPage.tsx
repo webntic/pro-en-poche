@@ -164,7 +164,6 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
     } as any
 
     onAuth(newProvider)
-    toast.info('Votre compte prestataire sera disponible après validation par un administrateur')
     onClose()
   }
 

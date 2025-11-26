@@ -33,6 +33,7 @@ import { BecomeProviderSection } from '@/components/BecomeProviderSection'
 import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
 import { FAQSection } from '@/components/FAQSection'
 import { Footer } from '@/components/Footer'
+import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
 import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -65,6 +66,8 @@ function App() {
   const [authOpen, setAuthOpen] = useState(false)
   const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
   const [showAuthPage, setShowAuthPage] = useState(false)
+  const [showProviderSuccess, setShowProviderSuccess] = useState(false)
+  const [pendingProviderData, setPendingProviderData] = useState<{ name: string; email: string } | null>(null)
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
@@ -91,8 +94,6 @@ function App() {
   }, [])
 
   const handleAuth = (user: User) => {
-    setCurrentUser(user)
-    
     const existingUser = (users || []).find(u => u.id === user.id)
     if (!existingUser) {
       if (user.role === 'provider') {
@@ -101,10 +102,17 @@ function App() {
           verified: false,
         }
         setProviders((current) => [...(current || []), newProvider])
-        toast.success('Votre compte prestataire est en attente de validation par un administrateur')
+        setPendingProviderData({ name: user.name, email: user.email })
+        setShowProviderSuccess(true)
+        setShowAuthPage(false)
       } else {
+        setCurrentUser(user)
         setUsers((current) => [...(current || []), user])
+        setShowAuthPage(false)
       }
+    } else {
+      setCurrentUser(user)
+      setShowAuthPage(false)
     }
   }
 
@@ -344,12 +352,12 @@ function App() {
     if (provider) {
       setUsers((current) => [...(current || []), provider])
     }
-    toast.success('Prestataire approuvé avec succès!')
+    toast.success('Prestataire approuvé avec succès! Un email de confirmation a été envoyé.')
   }
 
   const handleRejectProvider = (providerId: string) => {
     setProviders((current) => (current || []).filter((p) => p.id !== providerId))
-    toast.success('Prestataire rejeté')
+    toast.success('Prestataire rejeté. Un email d\'information a été envoyé.')
   }
 
   const handleDeleteUser = (userId: string) => {
@@ -405,7 +413,17 @@ function App() {
 
   return (
     <>
-      {showAuthPage ? (
+      {showProviderSuccess && pendingProviderData ? (
+        <ProviderRegistrationSuccess
+          providerName={pendingProviderData.name}
+          providerEmail={pendingProviderData.email}
+          onClose={() => {
+            setShowProviderSuccess(false)
+            setPendingProviderData(null)
+          }}
+          logo={siteSettings?.logo}
+        />
+      ) : showAuthPage ? (
         <AuthPage
           onAuth={handleAuth}
           onClose={() => setShowAuthPage(false)}
