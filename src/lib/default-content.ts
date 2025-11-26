@@ -63,32 +63,41 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     ],
   },
   stats: {
-    providers: { label: 'Prestataires Actifs', value: '500+' },
-    clients: { label: 'Clients Satisfaits', value: '10,000+' },
-    bookings: { label: 'Services Réservés', value: '25,000+' },
-    satisfaction: { label: 'Taux de Satisfaction', value: '98%' },
+    title: 'ProEnPoche en chiffres',
+    subtitle: 'Une plateforme qui connecte des milliers de clients avec les meilleurs professionnels.',
+    providers: { label: 'Professionnels vérifiés', value: '500+' },
+    clients: { label: 'Clients satisfaits', value: '10,000+' },
+    bookings: { label: 'Services réservés', value: '25,000+' },
+    satisfaction: { label: 'Note moyenne', value: '4.8/5' },
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
   },
   testimonials: {
-    title: 'Ce Que Disent Nos Clients',
-    subtitle: 'Des milliers de clients satisfaits nous font confiance',
+    title: 'Ce que disent nos clients',
+    subtitle: 'Des milliers de clients satisfaits font confiance à ProEnPoche',
     items: [
       {
         name: 'Marie Dupont',
         role: 'Propriétaire',
         content: 'Service exceptionnel! J\'ai trouvé un plombier qualifié en quelques minutes. La réservation était simple et le service impeccable.',
         rating: 5,
+        avatar: 'https://i.pravatar.cc/150?img=1',
+        service: 'Plomberie',
       },
       {
         name: 'Jean Martin',
         role: 'Entrepreneur',
         content: 'Pro En Poche m\'a permis de développer mon activité de rénovation. Les clients sont sérieux et le paiement est sécurisé.',
         rating: 5,
+        avatar: 'https://i.pravatar.cc/150?img=12',
+        service: 'Rénovation',
       },
       {
         name: 'Sophie Tremblay',
         role: 'Gestionnaire',
         content: 'Plateforme très professionnelle. J\'ai réservé plusieurs services et je n\'ai jamais été déçue. Je recommande vivement!',
         rating: 5,
+        avatar: 'https://i.pravatar.cc/150?img=5',
+        service: 'Ménage',
       },
     ],
   },
@@ -97,6 +106,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     subtitle: 'Développez votre activité avec Pro En Poche',
     description: 'Rejoignez notre réseau de professionnels et accédez à des milliers de clients potentiels.',
     buttonText: 'Créer mon compte prestataire',
+    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&q=80',
     benefits: [
       {
         title: 'Visibilité Accrue',
@@ -145,5 +155,32 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   footer: {
     description: 'Pro En Poche - Votre plateforme de confiance pour trouver des professionnels qualifiés partout au Canada.',
     copyright: '© 2024 Pro En Poche. Tous droits réservés.',
+    aboutImage: '',
   },
+  homeSlides: [
+    {
+      id: 1,
+      title: 'Trouvez des Professionnels Qualifiés',
+      description: 'Connectez-vous avec des experts vérifiés partout au Canada',
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=400&fit=crop',
+      alt: 'Professionnel au travail',
+      buttonText: 'Découvrir les Professionnels',
+    },
+    {
+      id: 2,
+      title: 'Services de Qualité à Votre Porte',
+      description: 'Des prestataires expérimentés pour tous vos besoins',
+      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop',
+      alt: 'Équipe de professionnels',
+      buttonText: 'Découvrir les Professionnels',
+    },
+    {
+      id: 3,
+      title: 'Réservation Simple et Sécurisée',
+      description: 'Paiement sécurisé et satisfaction garantie',
+      image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=400&fit=crop',
+      alt: 'Artisan professionnel',
+      buttonText: 'Découvrir les Professionnels',
+    },
+  ],
 }

@@ -1,33 +1,72 @@
 import { Card } from '@/components/ui/card'
-import { Users, Briefcase, Star, MapPin } from '@phosphor-icons/react'
+import { Users, Briefcase, Star, MapPin, Image } from '@phosphor-icons/react'
+import { InlineEditor } from '@/components/InlineEditor'
 
-export function StatsSection() {
+interface StatsSectionProps {
+  content?: {
+    title: string
+    subtitle: string
+    providers: { label: string; value: string }
+    clients: { label: string; value: string }
+    bookings: { label: string; value: string }
+    satisfaction: { label: string; value: string }
+    image?: string
+  }
+  onUpdateContent?: (path: string[], value: string) => void
+  editMode?: boolean
+}
+
+export function StatsSection({ content, onUpdateContent, editMode }: StatsSectionProps) {
   const stats = [
     {
       icon: Users,
-      value: '10,000+',
-      label: 'Clients satisfaits',
+      value: content?.clients.value || '10,000+',
+      label: content?.clients.label || 'Clients satisfaits',
       description: 'Des milliers de clients font confiance à nos services',
+      key: 'clients',
     },
     {
       icon: Briefcase,
-      value: '500+',
-      label: 'Professionnels vérifiés',
+      value: content?.providers.value || '500+',
+      label: content?.providers.label || 'Professionnels vérifiés',
       description: 'Une équipe de prestataires qualifiés et certifiés',
+      key: 'providers',
     },
     {
       icon: Star,
-      value: '4.8/5',
-      label: 'Note moyenne',
+      value: content?.satisfaction.value || '4.8/5',
+      label: content?.satisfaction.label || 'Note moyenne',
       description: 'Basée sur plus de 15,000 avis clients',
+      key: 'satisfaction',
     },
     {
       icon: MapPin,
-      value: '50+',
-      label: 'Villes desservies',
+      value: content?.bookings.value || '50+',
+      label: content?.bookings.label || 'Villes desservies',
       description: 'Partout au Québec et au Canada',
+      key: 'bookings',
     },
   ]
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && onUpdateContent) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        onUpdateContent(['stats', 'image'], reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleUpdateStat = (key: string, field: 'label' | 'value', value: string) => {
+    if (!onUpdateContent || !content) return
+    const statData = content[key as keyof typeof content]
+    if (typeof statData === 'object' && statData !== null && 'label' in statData && 'value' in statData) {
+      const updatedStat = { ...statData, [field]: value }
+      onUpdateContent(['stats', key], JSON.stringify(updatedStat))
+    }
+  }
 
   return (
     <section className="py-20 relative overflow-hidden">
@@ -38,20 +77,46 @@ export function StatsSection() {
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
             <div className="space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight premium-text-gradient">
-                ProEnPoche en chiffres
+                <InlineEditor
+                  value={content?.title || 'ProEnPoche en chiffres'}
+                  onSave={(value) => onUpdateContent?.(['stats', 'title'], value)}
+                  className="text-4xl md:text-5xl font-bold tracking-tight premium-text-gradient"
+                  editMode={editMode}
+                />
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Une plateforme qui connecte des milliers de clients avec les meilleurs professionnels. 
-                Rejoignez notre communauté grandissante de clients et prestataires satisfaits.
+                <InlineEditor
+                  value={content?.subtitle || 'Une plateforme qui connecte des milliers de clients avec les meilleurs professionnels.'}
+                  onSave={(value) => onUpdateContent?.(['stats', 'subtitle'], value)}
+                  className="text-xl text-muted-foreground"
+                  editMode={editMode}
+                  multiline
+                />
               </p>
             </div>
-            <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl group">
               <img
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80"
+                src={content?.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80'}
                 alt="Équipe collaborative de professionnels"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              {editMode && onUpdateContent && (
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <div className="flex items-center gap-2 text-white px-4 py-2 bg-primary rounded-lg hover:bg-primary/90">
+                      <Image size={20} weight="duotone" />
+                      <span className="text-sm font-medium">Changer l'image</span>
+                    </div>
+                  </label>
+                </div>
+              )}
             </div>
           </div>
 
@@ -69,10 +134,20 @@ export function StatsSection() {
                     </div>
                   </div>
                   <div className="text-4xl font-bold mb-2 premium-text-gradient">
-                    {stat.value}
+                    <InlineEditor
+                      value={stat.value}
+                      onSave={(value) => handleUpdateStat(stat.key, 'value', value)}
+                      className="text-4xl font-bold premium-text-gradient"
+                      editMode={editMode}
+                    />
                   </div>
                   <h3 className="font-semibold text-lg mb-2 text-foreground">
-                    {stat.label}
+                    <InlineEditor
+                      value={stat.label}
+                      onSave={(value) => handleUpdateStat(stat.key, 'label', value)}
+                      className="font-semibold text-lg text-foreground"
+                      editMode={editMode}
+                    />
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {stat.description}

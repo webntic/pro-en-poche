@@ -171,10 +171,13 @@ export interface SiteContent {
     }>
   }
   stats: {
+    title: string
+    subtitle: string
     providers: { label: string; value: string }
     clients: { label: string; value: string }
     bookings: { label: string; value: string }
     satisfaction: { label: string; value: string }
+    image?: string
   }
   testimonials: {
     title: string
@@ -184,6 +187,8 @@ export interface SiteContent {
       role: string
       content: string
       rating: number
+      avatar?: string
+      service?: string
     }>
   }
   becomeProvider: {
@@ -191,6 +196,7 @@ export interface SiteContent {
     subtitle: string
     description: string
     buttonText: string
+    image?: string
     benefits: Array<{
       title: string
       description: string
@@ -207,7 +213,16 @@ export interface SiteContent {
   footer: {
     description: string
     copyright: string
+    aboutImage?: string
   }
+  homeSlides: Array<{
+    id: number
+    title: string
+    description: string
+    image: string
+    alt: string
+    buttonText: string
+  }>
 }
 
 export interface ChatMessage {

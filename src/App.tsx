@@ -729,10 +729,22 @@ function App() {
         <>
           {activeSection === 'accueil' && (
             <>
-              <HeroSlider />
-              <WhyChooseUsSection />
+              <HeroSlider 
+                slides={siteContent?.homeSlides}
+                onUpdateContent={handleUpdateContent}
+                editMode={contentEditMode}
+              />
+              <WhyChooseUsSection 
+                content={siteContent?.whyChooseUs}
+                onUpdateContent={handleUpdateContent}
+                editMode={contentEditMode}
+              />
               <PopularCategoriesSection />
-              <StatsSection />
+              <StatsSection 
+                content={siteContent?.stats}
+                onUpdateContent={handleUpdateContent}
+                editMode={contentEditMode}
+              />
               <TestimonialsSection />
               <BecomeProviderSection />
             </>
@@ -906,7 +918,13 @@ function App() {
         />
       )}
 
-      <Footer onNavigate={handleFooterNavigate} />
+      <Footer 
+        onNavigate={handleFooterNavigate}
+        aboutImage={siteContent?.footer.aboutImage}
+        footerDescription={siteContent?.footer.description}
+        onUpdateContent={handleUpdateContent}
+        editMode={contentEditMode}
+      />
 
       <CookieConsent />
 
