@@ -40,6 +40,7 @@ import { TestimonialsSection } from '@/components/TestimonialsSection'
 import { StatsSection } from '@/components/StatsSection'
 import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
 import { ProfileEditDialog } from '@/components/ProfileEditDialog'
+import { CookieConsent } from '@/components/CookieConsent'
 import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, ChatMessage, ChatConversation } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -853,6 +854,8 @@ function App() {
       )}
 
       <Footer onNavigate={handleFooterNavigate} />
+
+      <CookieConsent />
 
       <Toaster />
         </div>
