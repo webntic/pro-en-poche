@@ -23,6 +23,7 @@ import { ProviderDashboard } from '@/components/ProviderDashboard'
 import { AdminDashboard } from '@/components/AdminDashboard'
 import { SuperAdminDashboard } from '@/components/SuperAdminDashboard'
 import { AnnouncementDialog } from '@/components/AnnouncementDialog'
+import { ChatDialog } from '@/components/ChatDialog'
 import { HeroSlider } from '@/components/HeroSlider'
 import { Logo } from '@/components/Logo'
 import { AboutSection } from '@/components/AboutSection'
@@ -34,7 +35,7 @@ import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
 import { FAQSection } from '@/components/FAQSection'
 import { Footer } from '@/components/Footer'
 import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
-import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings } from '@/lib/types'
+import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, ChatMessage, ChatConversation } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
 import logoImage from '@/assets/images/logo.svg'
@@ -45,6 +46,7 @@ function App() {
   const [users, setUsers] = useKV<User[]>('users', [])
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [reviews, setReviews] = useKV<Review[]>('reviews', [])
+  const [messages, setMessages] = useKV<ChatMessage[]>('chat-messages', [])
   const [announcements, setAnnouncements] = useKV<Announcement[]>('announcements', [])
   const [siteSettings, setSiteSettings] = useKV<SiteSettings>('site-settings', {
     smtp: {
@@ -72,8 +74,10 @@ function App() {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [chatDialogOpen, setChatDialogOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [selectedConversation, setSelectedConversation] = useState<ChatConversation | null>(null)
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number | null } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -405,6 +409,36 @@ function App() {
     setSiteSettings(newSettings)
   }
 
+  const handleOpenChat = (conversation: ChatConversation) => {
+    setSelectedConversation(conversation)
+    setChatDialogOpen(true)
+    
+    setMessages((current) =>
+      (current || []).map((m) =>
+        m.bookingId === conversation.bookingId && m.senderId !== currentUser?.id
+          ? { ...m, isRead: true }
+          : m
+      )
+    )
+  }
+
+  const handleSendMessage = (messageText: string) => {
+    if (!selectedConversation || !currentUser) return
+    
+    const newMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      bookingId: selectedConversation.bookingId,
+      senderId: currentUser.id,
+      senderName: currentUser.name,
+      senderAvatar: currentUser.avatar,
+      message: messageText,
+      createdAt: new Date().toISOString(),
+      isRead: false,
+    }
+    
+    setMessages((current) => [...(current || []), newMessage])
+  }
+
   const handleFooterNavigate = (section: 'faq') => {
     setShowDashboard(false)
     setActiveSection(section)
@@ -546,19 +580,27 @@ function App() {
               announcements={userAnnouncements}
               bookings={bookings || []}
               reviews={reviews || []}
+              messages={messages || []}
+              users={allUsers}
               onCreateAnnouncement={handleCreateAnnouncement}
               onEditAnnouncement={handleEditAnnouncement}
               onDeleteAnnouncement={handleDeleteAnnouncement}
               onToggleAnnouncementStatus={handleToggleAnnouncementStatus}
               onGoToSubscription={handleGoToSubscription}
+              onOpenChat={handleOpenChat}
             />
           ) : (
             <Dashboard
               bookings={userBookings}
               reviews={userReviews}
               providers={providers || []}
+              messages={messages || []}
+              currentUserId={currentUser.id}
+              currentUserName={currentUser.name}
+              currentUserAvatar={currentUser.avatar}
               onMarkComplete={handleMarkComplete}
               onOpenReview={handleOpenReview}
+              onOpenChat={handleOpenChat}
             />
           )}
         </main>
@@ -688,6 +730,34 @@ function App() {
           planName={selectedPlan.name}
           planPrice={selectedPlan.price}
           onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
+
+      {selectedConversation && currentUser && (
+        <ChatDialog
+          open={chatDialogOpen}
+          onOpenChange={setChatDialogOpen}
+          bookingId={selectedConversation.bookingId}
+          currentUserId={currentUser.id}
+          currentUserName={currentUser.name}
+          currentUserAvatar={currentUser.avatar}
+          otherUserId={
+            currentUser.id === selectedConversation.providerId
+              ? selectedConversation.clientId
+              : selectedConversation.providerId
+          }
+          otherUserName={
+            currentUser.id === selectedConversation.providerId
+              ? selectedConversation.clientName
+              : selectedConversation.providerName
+          }
+          otherUserAvatar={
+            currentUser.id === selectedConversation.providerId
+              ? selectedConversation.clientAvatar
+              : selectedConversation.providerAvatar
+          }
+          messages={(messages || []).filter(m => m.bookingId === selectedConversation.bookingId)}
+          onSendMessage={handleSendMessage}
         />
       )}
 

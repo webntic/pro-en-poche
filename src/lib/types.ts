@@ -124,3 +124,27 @@ export interface SiteSettings {
   }
   updatedAt: string
 }
+
+export interface ChatMessage {
+  id: string
+  bookingId: string
+  senderId: string
+  senderName: string
+  senderAvatar?: string
+  message: string
+  createdAt: string
+  isRead: boolean
+}
+
+export interface ChatConversation {
+  bookingId: string
+  providerId: string
+  providerName: string
+  providerAvatar?: string
+  clientId: string
+  clientName: string
+  clientAvatar?: string
+  lastMessage?: string
+  lastMessageAt?: string
+  unreadCount: number
+}

@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Switch } from '@/components/ui/switch'
-import { Announcement, Booking, Review, ServiceProvider } from '@/lib/types'
+import { Announcement, Booking, Review, ServiceProvider, ChatMessage, ChatConversation, User } from '@/lib/types'
 import {
   Calendar,
   CreditCard,
@@ -22,9 +22,11 @@ import {
   Pencil,
   Trash,
   CheckCircle,
+  ChatCircle,
 } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
+import { ChatList } from '@/components/ChatList'
 
 interface ProviderDashboardProps {
   providerId: string
@@ -32,11 +34,14 @@ interface ProviderDashboardProps {
   announcements: Announcement[]
   bookings: Booking[]
   reviews: Review[]
+  messages: ChatMessage[]
+  users: User[]
   onCreateAnnouncement: () => void
   onEditAnnouncement: (announcement: Announcement) => void
   onDeleteAnnouncement: (announcementId: string) => void
   onToggleAnnouncementStatus: (announcementId: string, isActive: boolean) => void
   onGoToSubscription: () => void
+  onOpenChat: (conversation: ChatConversation) => void
 }
 
 export function ProviderDashboard({
@@ -45,14 +50,43 @@ export function ProviderDashboard({
   announcements,
   bookings,
   reviews,
+  messages,
+  users,
   onCreateAnnouncement,
   onEditAnnouncement,
   onDeleteAnnouncement,
   onToggleAnnouncementStatus,
   onGoToSubscription,
+  onOpenChat,
 }: ProviderDashboardProps) {
   const providerBookings = bookings.filter((b) => b.providerId === providerId)
   const providerReviews = reviews.filter((r) => r.providerId === providerId)
+
+  const confirmedOrCompletedBookings = providerBookings.filter(
+    b => b.status === 'confirmed' || b.status === 'completed'
+  )
+
+  const conversations: ChatConversation[] = confirmedOrCompletedBookings.map(booking => {
+    const client = users.find(u => u.id === booking.clientId)
+    const bookingMessages = messages.filter(m => m.bookingId === booking.id)
+    const lastMessage = bookingMessages.length > 0 
+      ? bookingMessages[bookingMessages.length - 1]
+      : undefined
+    const unreadCount = bookingMessages.filter(m => !m.isRead && m.senderId !== providerId).length
+
+    return {
+      bookingId: booking.id,
+      providerId: providerId,
+      providerName: provider.name,
+      providerAvatar: provider.avatar,
+      clientId: booking.clientId,
+      clientName: client?.name || 'Client',
+      clientAvatar: client?.avatar,
+      lastMessage: lastMessage?.message,
+      lastMessageAt: lastMessage?.createdAt,
+      unreadCount,
+    }
+  })
 
   const stats = {
     totalAnnouncements: announcements.length,
@@ -215,6 +249,14 @@ export function ProviderDashboard({
         <TabsList>
           <TabsTrigger value="announcements">Mes annonces</TabsTrigger>
           <TabsTrigger value="bookings">Réservations reçues</TabsTrigger>
+          <TabsTrigger value="messages">
+            Messagerie
+            {conversations.filter(c => c.unreadCount > 0).length > 0 && (
+              <Badge variant="destructive" className="ml-2">
+                {conversations.reduce((sum, c) => sum + c.unreadCount, 0)}
+              </Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="reviews">Avis reçus</TabsTrigger>
         </TabsList>
 
@@ -341,55 +383,82 @@ export function ProviderDashboard({
                   <TableHead>Statut</TableHead>
                   <TableHead>Prix</TableHead>
                   <TableHead>Paiement</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {providerBookings.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       Aucune réservation pour le moment. Vos clients verront vos annonces
                       bientôt!
                     </TableCell>
                   </TableRow>
                 ) : (
-                  providerBookings.map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell className="font-medium">Client #{booking.clientId.slice(-6)}</TableCell>
-                      <TableCell>{booking.serviceType}</TableCell>
-                      <TableCell>
-                        {format(new Date(booking.date), 'dd MMM yyyy')} à {booking.time}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(booking.status)}>
-                          {getStatusLabel(booking.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{booking.price}$</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            booking.paymentStatus === 'released'
-                              ? 'default'
+                  providerBookings.map((booking) => {
+                    const conversation = conversations.find(c => c.bookingId === booking.id)
+                    const canChat = booking.status === 'confirmed' || booking.status === 'completed'
+                    
+                    return (
+                      <TableRow key={booking.id}>
+                        <TableCell className="font-medium">Client #{booking.clientId.slice(-6)}</TableCell>
+                        <TableCell>{booking.serviceType}</TableCell>
+                        <TableCell>
+                          {format(new Date(booking.date), 'dd MMM yyyy')} à {booking.time}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(booking.status)}>
+                            {getStatusLabel(booking.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{booking.price}$</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              booking.paymentStatus === 'released'
+                                ? 'default'
+                                : booking.paymentStatus === 'held'
+                                ? 'secondary'
+                                : 'outline'
+                            }
+                          >
+                            {booking.paymentStatus === 'released'
+                              ? 'Libéré'
                               : booking.paymentStatus === 'held'
-                              ? 'secondary'
-                              : 'outline'
-                          }
-                        >
-                          {booking.paymentStatus === 'released'
-                            ? 'Libéré'
-                            : booking.paymentStatus === 'held'
-                            ? 'En garantie'
-                            : booking.paymentStatus === 'refunded'
-                            ? 'Remboursé'
-                            : 'En attente'}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                              ? 'En garantie'
+                              : booking.paymentStatus === 'refunded'
+                              ? 'Remboursé'
+                              : 'En attente'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {canChat && conversation && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onOpenChat(conversation)}
+                              className="gap-2"
+                            >
+                              <ChatCircle size={16} />
+                              Chater
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 )}
               </TableBody>
             </Table>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="messages" className="space-y-4">
+          <ChatList
+            conversations={conversations}
+            currentUserId={providerId}
+            onOpenChat={onOpenChat}
+          />
         </TabsContent>
 
         <TabsContent value="reviews" className="space-y-4">
