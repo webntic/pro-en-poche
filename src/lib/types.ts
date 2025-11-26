@@ -11,6 +11,22 @@ export interface User {
   role: UserRole
   avatar?: string
   createdAt: string
+  phone?: string
+  address?: string
+  servicePreferences?: ServicePreferences
+}
+
+export interface ServicePreferences {
+  serviceType: string
+  frequency: string
+  availability: string
+  preferredDate: string
+  preferredTime: string
+  timeSlot: string
+  needDescription: string
+  budget: number
+  comments: string
+  consentMarketing: boolean
 }
 
 export type SubscriptionPlan = 'basic' | 'premium' | 'enterprise' | null

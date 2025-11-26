@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import { Logo } from '@/components/Logo'
 import logoImage from '@/assets/images/logo.svg'
 import { MultiStepProviderForm, ProviderFormData } from '@/components/MultiStepProviderForm'
+import { MultiStepClientForm, ClientFormData } from '@/components/MultiStepClientForm'
 
 interface AuthPageProps {
   onAuth: (user: User) => void
@@ -23,7 +24,7 @@ interface AuthPageProps {
 }
 
 export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) {
-  const [mode, setMode] = useState<'signin' | 'signup' | 'select-role' | 'provider-multistep'>('signin')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'select-role' | 'provider-multistep' | 'client-multistep'>('signin')
   const [role, setRole] = useState<UserRole>(initialRole || 'client')
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
     if (selectedRole === 'provider') {
       setMode('provider-multistep')
     } else {
-      setMode('select-role')
+      setMode('client-multistep')
     }
   }
 
@@ -167,6 +168,33 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
     onClose()
   }
 
+  const handleClientFormSubmit = (data: ClientFormData) => {
+    const newClient: User = {
+      id: `client-${Date.now()}`,
+      email: data.email,
+      name: `${data.firstName} ${data.lastName}`,
+      role: 'client',
+      createdAt: new Date().toISOString(),
+      phone: data.phone,
+      address: `${data.address1}${data.address2 ? ', ' + data.address2 : ''}, ${data.city}, ${data.province}`,
+      servicePreferences: {
+        serviceType: data.serviceType === 'Autre' ? data.otherService : data.serviceType,
+        frequency: data.frequency,
+        availability: data.availability,
+        preferredDate: data.date,
+        preferredTime: data.time,
+        timeSlot: data.timeSlot,
+        needDescription: data.needDescription,
+        budget: data.budget,
+        comments: data.comments,
+        consentMarketing: data.consentMarketing,
+      },
+    } as any
+
+    onAuth(newClient)
+    onClose()
+  }
+
   const handleTabChange = (v: string) => {
     if (v === 'signup') {
       if (initialRole === 'provider') {
@@ -179,6 +207,47 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
     } else {
       setMode(v as any)
     }
+  }
+
+  if (mode === 'client-multistep') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border bg-card sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <button 
+                onClick={onClose}
+                className="flex-shrink-0 hover:opacity-80 transition-opacity"
+              >
+                <img src={logo || logoImage} alt="Pro En Poche" className="h-12 w-auto" />
+              </button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 container mx-auto px-4 py-12">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">Inscription Client</h1>
+              <p className="text-muted-foreground">
+                Créez votre compte pour trouver le prestataire idéal
+              </p>
+            </div>
+
+            <MultiStepClientForm onSubmit={handleClientFormSubmit} onBack={handleBackToSignup} />
+          </div>
+        </main>
+      </div>
+    )
   }
 
   if (mode === 'provider-multistep') {
