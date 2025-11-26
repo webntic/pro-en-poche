@@ -21,9 +21,10 @@ interface AuthPageProps {
   onClose: () => void
   initialRole?: UserRole
   logo?: string
+  existingUsers?: User[]
 }
 
-export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) {
+export function AuthPage({ onAuth, onClose, initialRole, logo, existingUsers = [] }: AuthPageProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'select-role' | 'provider-multistep' | 'client-multistep'>('signin')
   const [role, setRole] = useState<UserRole>(initialRole || 'client')
 
@@ -61,6 +62,20 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
       return
     }
 
+    if (mode === 'signin') {
+      const existingUser = existingUsers.find(u => u.email.toLowerCase() === formData.email.toLowerCase())
+      
+      if (existingUser) {
+        onAuth(existingUser)
+        toast.success(`Bienvenue ${existingUser.name}!`)
+        onClose()
+        return
+      } else {
+        toast.error('Email ou mot de passe incorrect')
+        return
+      }
+    }
+
     if (mode === 'select-role' && !formData.name) {
       toast.error('Veuillez entrer votre nom')
       return
@@ -71,6 +86,12 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
         toast.error('Veuillez compléter tous les champs prestataire')
         return
       }
+    }
+
+    const emailExists = existingUsers.find(u => u.email.toLowerCase() === formData.email.toLowerCase())
+    if (emailExists) {
+      toast.error('Cet email est déjà utilisé. Veuillez vous connecter.')
+      return
     }
 
     if (mode === 'select-role' && role === 'provider') {
@@ -136,6 +157,12 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
   }
 
   const handleProviderFormSubmit = (data: ProviderFormData) => {
+    const emailExists = existingUsers.find(u => u.email.toLowerCase() === data.email.toLowerCase())
+    if (emailExists) {
+      toast.error('Cet email est déjà utilisé. Veuillez vous connecter.')
+      return
+    }
+
     const hourlyRateMap: Record<string, number> = {
       A: 10,
       B: 20,
@@ -171,6 +198,12 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
   }
 
   const handleClientFormSubmit = (data: ClientFormData) => {
+    const emailExists = existingUsers.find(u => u.email.toLowerCase() === data.email.toLowerCase())
+    if (emailExists) {
+      toast.error('Cet email est déjà utilisé. Veuillez vous connecter.')
+      return
+    }
+
     const newClient: User = {
       id: `client-${Date.now()}`,
       email: data.email,

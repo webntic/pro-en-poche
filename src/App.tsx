@@ -102,7 +102,7 @@ function App() {
   }, [])
 
   const handleAuth = (user: User) => {
-    const existingUser = (users || []).find(u => u.id === user.id)
+    const existingUser = (users || []).find(u => u.id === user.id || u.email === user.email)
     if (!existingUser) {
       if (user.role === 'provider') {
         const newProvider: ServiceProvider = {
@@ -113,13 +113,18 @@ function App() {
         setPendingProviderData({ name: user.name, email: user.email })
         setShowProviderSuccess(true)
         setShowAuthPage(false)
+      } else if (user.role === 'admin') {
+        setCurrentUser(user)
+        setUsers((current) => [...(current || []), user])
+        setShowAuthPage(false)
+        toast.success('Bienvenue administrateur!')
       } else {
         setCurrentUser(user)
         setUsers((current) => [...(current || []), user])
         setShowAuthPage(false)
       }
     } else {
-      setCurrentUser(user)
+      setCurrentUser(existingUser)
       setShowAuthPage(false)
     }
   }
@@ -508,6 +513,7 @@ function App() {
           onClose={() => setShowAuthPage(false)}
           initialRole={authInitialRole}
           logo={siteSettings?.logo}
+          existingUsers={[...(users || []), ...(providers || [])]}
         />
       ) : showProviderProfile && selectedProvider ? (
         <ProviderPublicPage
