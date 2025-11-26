@@ -10,11 +10,14 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Bell, Check, Checks, Trash } from '@phosphor-icons/react'
-import { Notification } from '@/lib/types'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Bell, Check, Checks, Trash, CalendarCheck, CurrencyDollar, ChatCircle, BellSimple } from '@phosphor-icons/react'
+import { Notification, NotificationType } from '@/lib/types'
 import { getNotificationIcon, getNotificationColor } from '@/lib/notifications'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
+
+type NotificationFilterType = 'all' | 'bookings' | 'payments' | 'messages'
 
 interface NotificationCenterProps {
   open: boolean
@@ -27,6 +30,13 @@ interface NotificationCenterProps {
   onNavigate?: (link?: string) => void
 }
 
+const getNotificationCategory = (type: NotificationType): NotificationFilterType => {
+  if (type.includes('booking')) return 'bookings'
+  if (type.includes('payment')) return 'payments'
+  if (type.includes('message')) return 'messages'
+  return 'all'
+}
+
 export function NotificationCenter({
   open,
   onOpenChange,
@@ -37,11 +47,20 @@ export function NotificationCenter({
   onDelete,
   onNavigate,
 }: NotificationCenterProps) {
+  const [activeFilter, setActiveFilter] = useState<NotificationFilterType>('all')
+
   const userNotifications = notifications
     .filter(n => n.userId === currentUserId)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
+  const filteredNotifications = activeFilter === 'all'
+    ? userNotifications
+    : userNotifications.filter(n => getNotificationCategory(n.type) === activeFilter)
+
   const unreadCount = userNotifications.filter(n => !n.isRead).length
+  const bookingsCount = userNotifications.filter(n => getNotificationCategory(n.type) === 'bookings' && !n.isRead).length
+  const paymentsCount = userNotifications.filter(n => getNotificationCategory(n.type) === 'payments' && !n.isRead).length
+  const messagesCount = userNotifications.filter(n => getNotificationCategory(n.type) === 'messages' && !n.isRead).length
 
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.isRead) {
@@ -55,8 +74,8 @@ export function NotificationCenter({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+      <DialogContent className="max-w-3xl max-h-[85vh] p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <DialogTitle className="text-2xl font-semibold">Notifications</DialogTitle>
@@ -78,20 +97,69 @@ export function NotificationCenter({
               </Button>
             )}
           </div>
+
+          <Tabs value={activeFilter} onValueChange={(value) => setActiveFilter(value as NotificationFilterType)}>
+            <TabsList className="grid w-full grid-cols-4 h-12">
+              <TabsTrigger value="all" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <BellSimple size={18} weight="duotone" />
+                <span className="hidden sm:inline">Toutes</span>
+                {unreadCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-full px-1.5 py-0 text-xs h-5 min-w-5">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="bookings" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <CalendarCheck size={18} weight="duotone" />
+                <span className="hidden sm:inline">Réservations</span>
+                {bookingsCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-full px-1.5 py-0 text-xs h-5 min-w-5">
+                    {bookingsCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <CurrencyDollar size={18} weight="duotone" />
+                <span className="hidden sm:inline">Paiements</span>
+                {paymentsCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-full px-1.5 py-0 text-xs h-5 min-w-5">
+                    {paymentsCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="messages" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <ChatCircle size={18} weight="duotone" />
+                <span className="hidden sm:inline">Messages</span>
+                {messagesCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-full px-1.5 py-0 text-xs h-5 min-w-5">
+                    {messagesCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </DialogHeader>
 
-        <ScrollArea className="h-[calc(80vh-120px)]">
+        <ScrollArea className="h-[calc(85vh-180px)]">
           <div className="p-6 space-y-2">
-            {userNotifications.length === 0 ? (
+            {filteredNotifications.length === 0 ? (
               <div className="text-center py-12">
                 <Bell size={48} weight="duotone" className="mx-auto text-muted-foreground mb-4" />
-                <p className="text-lg text-muted-foreground">Aucune notification</p>
+                <p className="text-lg text-muted-foreground">
+                  {activeFilter === 'all' 
+                    ? 'Aucune notification'
+                    : activeFilter === 'bookings'
+                    ? 'Aucune notification de réservation'
+                    : activeFilter === 'payments'
+                    ? 'Aucune notification de paiement'
+                    : 'Aucun message'}
+                </p>
                 <p className="text-sm text-muted-foreground mt-2">
                   Vous serez notifié ici de toutes les activités importantes
                 </p>
               </div>
             ) : (
-              userNotifications.map((notification) => (
+              filteredNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`
