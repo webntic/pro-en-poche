@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { EnvelopeSimple, Question, Phone, MapPin, FacebookLogo, InstagramLogo } from '@phosphor-icons/react'
+import { EnvelopeSimple, Question, Phone, FacebookLogo, InstagramLogo } from '@phosphor-icons/react'
 import logoImage from '@/assets/images/logo.svg'
 
 interface FooterProps {
@@ -29,19 +29,39 @@ export function Footer({ onNavigate }: FooterProps) {
                 <Phone size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
                 <div>
                   <p className="font-medium mb-1">Téléphone</p>
-                  <a href="tel:1-800-PRO-POCHE" className="text-muted-foreground hover:text-primary transition-colors">
-                    1-800-PRO-POCHE
+                  <a href="tel:+14508093831" className="text-muted-foreground hover:text-primary transition-colors">
+                    +1 450 809-3831
                   </a>
                 </div>
               </div>
               
               <div className="flex items-start gap-3">
-                <MapPin size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+                <FacebookLogo size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
                 <div>
-                  <p className="font-medium mb-1">Adresse</p>
-                  <p className="text-muted-foreground">
-                    Montréal, QC, Canada
-                  </p>
+                  <p className="font-medium mb-1">Facebook</p>
+                  <a 
+                    href="https://www.facebook.com/ProenPoche" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    @ProenPoche
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <InstagramLogo size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+                <div>
+                  <p className="font-medium mb-1">Instagram</p>
+                  <a 
+                    href="https://www.instagram.com/proenpoche" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    @proenpoche
+                  </a>
                 </div>
               </div>
             </div>
