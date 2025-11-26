@@ -3,60 +3,60 @@ import { UserPlus, CheckCircle, Briefcase } from '@phosphor-icons/react'
 
 export function BecomeProviderSection() {
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="py-20 bg-gradient-to-t from-muted/40 to-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-3">Devenir Prestataire</h2>
-          <p className="text-lg text-muted-foreground">Comment Commencer?</p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 premium-text-gradient">Devenir Prestataire</h2>
+          <p className="text-xl text-muted-foreground">Comment Commencer?</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardContent className="pt-8 pb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-6">
-                <UserPlus size={32} weight="duotone" />
+        <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+          <Card className="premium-card text-center hover:shadow-2xl transition-all group border-2">
+            <CardContent className="pt-10 pb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl premium-gradient text-primary-foreground mb-8 shadow-lg group-hover:scale-110 transition-transform">
+                <UserPlus size={40} weight="duotone" />
               </div>
-              <div className="mb-4">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold mb-3">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary text-lg font-bold mb-4 ring-2 ring-primary/20">
                   1
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Créez votre profil</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-2xl font-bold mb-4">Créez votre profil</h3>
+              <p className="text-muted-foreground text-base">
                 Renseignez vos informations, services et tarifs
               </p>
             </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardContent className="pt-8 pb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 text-secondary mb-6">
-                <CheckCircle size={32} weight="duotone" />
+          <Card className="premium-card text-center hover:shadow-2xl transition-all group border-2 md:scale-105">
+            <CardContent className="pt-10 pb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl premium-gradient text-secondary-foreground mb-8 shadow-lg group-hover:scale-110 transition-transform">
+                <CheckCircle size={40} weight="duotone" />
               </div>
-              <div className="mb-4">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-secondary-foreground text-sm font-bold mb-3">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary text-lg font-bold mb-4 ring-2 ring-primary/20">
                   2
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Validez votre compte</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-2xl font-bold mb-4">Validez votre compte</h3>
+              <p className="text-muted-foreground text-base">
                 Vérifiez votre identité et vos qualifications
               </p>
             </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardContent className="pt-8 pb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 text-accent mb-6">
-                <Briefcase size={32} weight="duotone" />
+          <Card className="premium-card text-center hover:shadow-2xl transition-all group border-2">
+            <CardContent className="pt-10 pb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl premium-gradient text-accent-foreground mb-8 shadow-lg group-hover:scale-110 transition-transform">
+                <Briefcase size={40} weight="duotone" />
               </div>
-              <div className="mb-4">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground text-sm font-bold mb-3">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary text-lg font-bold mb-4 ring-2 ring-primary/20">
                   3
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Recevez des demandes</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-2xl font-bold mb-4">Recevez des demandes</h3>
+              <p className="text-muted-foreground text-base">
                 Commencez à recevoir et accepter des missions
               </p>
             </CardContent>

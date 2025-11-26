@@ -432,7 +432,7 @@ function App() {
         />
       ) : (
         <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border bg-card sticky top-0 z-50">
+      <header className="premium-header sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-8">
             <button 
@@ -582,10 +582,10 @@ function App() {
 
           <main className="container mx-auto px-4 py-8">
             <div className="mb-8 text-center">
-              <h1 className="text-4xl font-bold tracking-tight mb-3">
+              <h1 className="text-5xl font-bold tracking-tight mb-4 premium-text-gradient">
                 Trouvez des Services Professionnels près de Chez Vous
               </h1>
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-xl text-muted-foreground mb-8">
                 Connectez-vous avec des professionnels vérifiés partout au Canada
               </p>
 

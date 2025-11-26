@@ -8,7 +8,7 @@ interface FooterProps {
 
 export function Footer({ onNavigate }: FooterProps) {
   return (
-    <footer className="border-t border-border bg-card mt-auto">
+    <footer className="border-t border-border/50 premium-header mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div className="space-y-4">

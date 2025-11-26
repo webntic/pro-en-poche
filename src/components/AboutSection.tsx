@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button'
 export function AboutSection() {
   return (
     <div className="bg-background">
-      <section className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-20">
+      <section className="relative bg-gradient-to-br from-primary/10 via-secondary/5 to-background py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h1 className="text-5xl font-bold tracking-tight leading-tight">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-8">
+                <h1 className="text-6xl font-bold tracking-tight leading-tight premium-text-gradient">
                   Votre solution maison tout-en-un
                 </h1>
                 <p className="text-xl text-muted-foreground leading-relaxed">
@@ -24,7 +24,7 @@ export function AboutSection() {
                   Grâce à ProenPoche, mettez-vous en relation avec des prestataires qualifiés.
                 </p>
               </div>
-              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-primary/20">
                 <img
                   src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"
                   alt="Équipe de professionnels"
@@ -62,13 +62,13 @@ export function AboutSection() {
                   description: 'Des professionnels passionnés, à votre écoute pour répondre à vos besoins',
                 },
               ].map((item, index) => (
-                <Card key={index} className="p-6 text-center space-y-4 border-2 hover:border-primary/50 transition-colors">
+                <Card key={index} className="premium-card p-8 text-center space-y-4 border-2 hover:border-primary/50 transition-all">
                   <div className="flex justify-center">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <item.icon size={32} className="text-primary" weight="duotone" />
+                    <div className="w-20 h-20 rounded-full premium-gradient flex items-center justify-center shadow-lg">
+                      <item.icon size={36} className="text-primary-foreground" weight="duotone" />
                     </div>
                   </div>
-                  <h3 className="font-semibold text-lg">{item.title}</h3>
+                  <h3 className="font-bold text-lg">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                 </Card>
               ))}

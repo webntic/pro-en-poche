@@ -54,13 +54,13 @@ export function PricingSection({ onBuyPlan }: PricingSectionProps) {
   ]
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-4xl font-bold tracking-tight mb-3">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-5xl font-bold tracking-tight mb-4 premium-text-gradient">
             Grille tarifaire
           </h2>
-          <p className="text-xl text-muted-foreground mb-2">
+          <p className="text-2xl font-semibold text-foreground mb-3">
             Nos packs d'adhésion
           </p>
           <p className="text-lg text-muted-foreground">
@@ -72,37 +72,37 @@ export function PricingSection({ onBuyPlan }: PricingSectionProps) {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col transition-all duration-300 hover:shadow-lg ${
+              className={`premium-card relative flex flex-col transition-all duration-300 hover:shadow-2xl ${
                 plan.featured
-                  ? 'border-primary shadow-md scale-105'
-                  : 'border-border'
+                  ? 'border-primary border-2 shadow-xl scale-105 hover:scale-110'
+                  : 'border-border/50'
               }`}
             >
               {plan.featured && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-4 py-1 text-sm">
-                    Populaire
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+                  <Badge className="premium-gradient text-primary-foreground px-6 py-2 text-sm shadow-lg">
+                    ⭐ Populaire
                   </Badge>
                 </div>
               )}
 
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl font-bold mb-2">
+              <CardHeader className="text-center pb-8 pt-8">
+                <CardTitle className="text-3xl font-bold mb-2 text-foreground">
                   {plan.name}
                 </CardTitle>
                 <CardDescription className="text-base">
                   {plan.description}
                 </CardDescription>
-                <div className="mt-4">
+                <div className="mt-6">
                   {plan.price ? (
-                    <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-5xl font-bold text-foreground">
+                    <div className="flex items-baseline justify-center gap-2">
+                      <span className="text-6xl font-bold premium-text-gradient">
                         ${plan.price}
                       </span>
-                      <span className="text-muted-foreground">/mois</span>
+                      <span className="text-lg text-muted-foreground font-medium">/mois</span>
                     </div>
                   ) : (
-                    <div className="text-4xl font-bold text-foreground">
+                    <div className="text-5xl font-bold premium-text-gradient">
                       Gratuit
                     </div>
                   )}
@@ -110,23 +110,23 @@ export function PricingSection({ onBuyPlan }: PricingSectionProps) {
               </CardHeader>
 
               <CardContent className="flex-1">
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <Check
-                        size={20}
+                        size={22}
                         weight="bold"
-                        className="text-secondary flex-shrink-0 mt-0.5"
+                        className="text-primary flex-shrink-0 mt-0.5"
                       />
-                      <span className="text-sm text-foreground">{feature}</span>
+                      <span className="text-sm text-foreground font-medium">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
 
-              <CardFooter>
+              <CardFooter className="pt-6">
                 <Button
-                  className="w-full"
+                  className={`w-full ${plan.featured ? 'premium-gradient shadow-lg hover:shadow-xl' : ''}`}
                   variant={plan.featured ? 'default' : 'outline'}
                   size="lg"
                   onClick={() => onBuyPlan?.(plan.name)}

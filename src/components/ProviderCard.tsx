@@ -20,12 +20,12 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
     .slice(0, 2)
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+    <Card className="premium-card p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-4">
-          <Avatar className="h-16 w-16">
+          <Avatar className="h-16 w-16 ring-2 ring-primary/20">
             <AvatarImage src={provider.avatar} alt={provider.name} />
-            <AvatarFallback className="text-lg font-semibold bg-primary text-primary-foreground">
+            <AvatarFallback className="text-lg font-semibold premium-gradient text-primary-foreground">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -86,7 +86,7 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
             </div>
             <Button 
               onClick={() => onBook(provider)}
-              className="w-full"
+              className="w-full premium-gradient shadow-md hover:shadow-lg"
             >
               Réserver
             </Button>

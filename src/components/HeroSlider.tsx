@@ -64,15 +64,21 @@ export function HeroSlider() {
               alt={slide.alt}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent">
               <div className="container mx-auto px-4 h-full flex flex-col justify-center">
-                <div className="max-w-2xl text-white">
-                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+                <div className="max-w-2xl text-white space-y-6 animate-fadeIn">
+                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-2xl">
                     {slide.title}
                   </h2>
-                  <p className="text-xl md:text-2xl lg:text-3xl opacity-90">
+                  <p className="text-xl md:text-2xl lg:text-3xl opacity-95 drop-shadow-lg">
                     {slide.description}
                   </p>
+                  <Button 
+                    size="lg" 
+                    className="premium-gradient shadow-2xl hover:shadow-primary/50 text-lg px-8 py-6 mt-4"
+                  >
+                    Découvrir les Professionnels
+                  </Button>
                 </div>
               </div>
             </div>
@@ -83,29 +89,29 @@ export function HeroSlider() {
           variant="ghost"
           size="icon"
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm h-12 w-12"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white backdrop-blur-md h-14 w-14 rounded-full shadow-xl transition-all"
         >
-          <CaretLeft size={24} />
+          <CaretLeft size={28} weight="bold" />
         </Button>
 
         <Button
           variant="ghost"
           size="icon"
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm h-12 w-12"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white backdrop-blur-md h-14 w-14 rounded-full shadow-xl transition-all"
         >
-          <CaretRight size={24} />
+          <CaretRight size={28} weight="bold" />
         </Button>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 bg-black/20 backdrop-blur-md px-4 py-3 rounded-full">
           {SLIDES.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`h-2 rounded-full transition-all ${
+              className={`h-3 rounded-full transition-all ${
                 index === currentSlide 
-                  ? 'w-8 bg-white' 
-                  : 'w-2 bg-white/50 hover:bg-white/75'
+                  ? 'w-12 bg-white shadow-lg' 
+                  : 'w-3 bg-white/60 hover:bg-white/80'
               }`}
               aria-label={`Aller à la diapositive ${index + 1}`}
             />

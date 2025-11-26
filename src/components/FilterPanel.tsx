@@ -22,9 +22,9 @@ interface FilterPanelProps {
 
 export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelProps) {
   return (
-    <Card className="p-6 h-fit sticky top-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Filtres</h3>
+    <Card className="premium-card p-6 h-fit sticky top-24">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-semibold text-lg premium-text-gradient">Filtres</h3>
         <Button
           variant="ghost"
           size="sm"
