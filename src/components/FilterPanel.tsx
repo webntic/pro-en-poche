@@ -22,33 +22,33 @@ interface FilterPanelProps {
 
 export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelProps) {
   return (
-    <Card className="premium-card p-6 h-fit sticky top-24">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-lg premium-text-gradient">Filtres</h3>
+    <Card className="premium-card p-7 h-fit sticky top-28 border-0">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="font-bold text-xl premium-text-gradient tracking-tight">Filtres</h3>
         <Button
           variant="ghost"
           size="sm"
           onClick={onClear}
-          className="h-8 px-2"
+          className="h-9 px-3 hover:bg-primary/5 transition-all duration-300"
         >
-          <X size={16} className="mr-1" />
+          <X size={18} weight="duotone" className="mr-1.5" />
           Effacer
         </Button>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label>Catégorie</Label>
+      <div className="space-y-7">
+        <div className="space-y-3">
+          <Label className="font-semibold text-sm">Catégorie</Label>
           <Select 
             value={filters.category} 
             onValueChange={(value) => onFilterChange({ ...filters, category: value })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 border-2 hover:border-primary/30 transition-all duration-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {SERVICE_CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
+                <SelectItem key={cat} value={cat} className="cursor-pointer">
                   {cat}
                 </SelectItem>
               ))}
@@ -56,20 +56,20 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
           </Select>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/40" />
 
-        <div className="space-y-2">
-          <Label>Ville</Label>
+        <div className="space-y-3">
+          <Label className="font-semibold text-sm">Ville</Label>
           <Select 
             value={filters.location} 
             onValueChange={(value) => onFilterChange({ ...filters, location: value })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 border-2 hover:border-primary/30 transition-all duration-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {CANADIAN_CITIES.map((loc) => (
-                <SelectItem key={loc} value={loc}>
+                <SelectItem key={loc} value={loc} className="cursor-pointer">
                   {loc}
                 </SelectItem>
               ))}
@@ -77,12 +77,12 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
           </Select>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/40" />
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label>Tarif horaire</Label>
-            <span className="text-sm text-muted-foreground">
+            <Label className="font-semibold text-sm">Tarif horaire</Label>
+            <span className="text-sm font-bold text-primary">
               {filters.priceRange[0]}$ - {filters.priceRange[1]}$
             </span>
           </div>
@@ -98,12 +98,12 @@ export function FilterPanel({ filters, onFilterChange, onClear }: FilterPanelPro
           />
         </div>
 
-        <Separator />
+        <Separator className="bg-border/40" />
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label>Note minimum</Label>
-            <span className="text-sm text-muted-foreground">
+            <Label className="font-semibold text-sm">Note minimum</Label>
+            <span className="text-sm font-bold text-primary">
               {filters.minRating}+ étoiles
             </span>
           </div>

@@ -9,56 +9,56 @@ interface FooterProps {
 
 export function Footer({ onNavigate }: FooterProps) {
   return (
-    <footer className="border-t border-border/50 premium-header mt-auto">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Contactez-nous</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <EnvelopeSimple size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+    <footer className="border-t border-border/30 premium-header mt-auto">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid md:grid-cols-3 gap-12 mb-12">
+          <div className="space-y-5">
+            <h3 className="text-lg font-semibold tracking-tight">Contactez-nous</h3>
+            <div className="space-y-4 text-sm">
+              <div className="flex items-start gap-3.5 group">
+                <EnvelopeSimple size={22} className="text-primary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" weight="duotone" />
                 <div>
-                  <p className="font-medium mb-1">Email</p>
-                  <a href="mailto:contact@proenpoche.ca" className="text-muted-foreground hover:text-primary transition-colors">
+                  <p className="font-semibold mb-1.5 text-foreground/80">Email</p>
+                  <a href="mailto:contact@proenpoche.ca" className="text-muted-foreground hover:text-primary transition-colors duration-300">
                     contact@proenpoche.ca
                   </a>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <Phone size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+              <div className="flex items-start gap-3.5 group">
+                <Phone size={22} className="text-primary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" weight="duotone" />
                 <div>
-                  <p className="font-medium mb-1">Téléphone</p>
-                  <a href="tel:+14508093831" className="text-muted-foreground hover:text-primary transition-colors">
+                  <p className="font-semibold mb-1.5 text-foreground/80">Téléphone</p>
+                  <a href="tel:+14508093831" className="text-muted-foreground hover:text-primary transition-colors duration-300">
                     +1 450 809-3831
                   </a>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <FacebookLogo size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+              <div className="flex items-start gap-3.5 group">
+                <FacebookLogo size={22} className="text-primary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" weight="duotone" />
                 <div>
-                  <p className="font-medium mb-1">Facebook</p>
+                  <p className="font-semibold mb-1.5 text-foreground/80">Facebook</p>
                   <a 
                     href="https://www.facebook.com/ProenPoche" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300"
                   >
                     @ProenPoche
                   </a>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <InstagramLogo size={20} className="text-primary flex-shrink-0 mt-0.5" weight="duotone" />
+              <div className="flex items-start gap-3.5 group">
+                <InstagramLogo size={22} className="text-primary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" weight="duotone" />
                 <div>
-                  <p className="font-medium mb-1">Instagram</p>
+                  <p className="font-semibold mb-1.5 text-foreground/80">Instagram</p>
                   <a 
                     href="https://www.instagram.com/proenpoche" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300"
                   >
                     @proenpoche
                   </a>
@@ -67,68 +67,68 @@ export function Footer({ onNavigate }: FooterProps) {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Support</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="space-y-5">
+            <h3 className="text-lg font-semibold tracking-tight">Support</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Notre équipe est disponible pour répondre à toutes vos questions et vous accompagner dans vos démarches.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Consultez notre FAQ pour trouver rapidement des réponses aux questions les plus fréquentes.
             </p>
             <Button 
               onClick={() => onNavigate('faq')} 
               variant="outline" 
-              className="gap-2"
+              className="gap-2.5 mt-2 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300"
             >
-              <Question size={18} />
+              <Question size={18} weight="duotone" />
               Voir la FAQ
             </Button>
           </div>
 
-          <div className="space-y-4">
-            <img src={logoImage} alt="Pro En Poche" className="h-12 w-auto mb-2" />
-            <p className="text-sm text-muted-foreground">
+          <div className="space-y-5">
+            <img src={logoImage} alt="Pro En Poche" className="h-11 w-auto mb-3" />
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Pro En Poche est la plateforme qui connecte les professionnels de services avec les clients partout au Canada.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Une solution fiable, sécurisée et transparente pour tous vos besoins en services professionnels.
             </p>
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-4 pt-3">
               <a
                 href="https://www.facebook.com/ProenPoche"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
                 aria-label="Suivez-nous sur Facebook"
               >
-                <FacebookLogo size={28} weight="fill" />
+                <FacebookLogo size={32} weight="fill" />
               </a>
               <a
                 href="https://www.instagram.com/proenpoche"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
                 aria-label="Suivez-nous sur Instagram"
               >
-                <InstagramLogo size={28} weight="fill" />
+                <InstagramLogo size={32} weight="fill" />
               </a>
             </div>
           </div>
         </div>
 
-        <Separator className="my-8" />
+        <Separator className="my-10 bg-border/40" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>
+          <p className="tracking-tight">
             © {new Date().getFullYear()} Pro En Poche. Tous droits réservés.
           </p>
-          <p>
+          <p className="tracking-tight">
             Créé par{' '}
             <a 
               href="https://www.webntic.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-primary hover:underline font-medium"
+              className="text-primary hover:underline font-semibold transition-colors duration-300"
             >
               webntic
             </a>

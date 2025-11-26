@@ -525,19 +525,19 @@ function App() {
       ) : (
         <div className="min-h-screen bg-background flex flex-col">
       <header className="premium-header sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between gap-8">
             <button 
               onClick={() => {
                 setShowDashboard(false)
                 setActiveSection('accueil')
               }}
-              className="flex-shrink-0 hover:opacity-80 transition-opacity"
+              className="flex-shrink-0 hover:opacity-75 transition-all duration-300"
             >
-              <img src={siteSettings?.logo || logoImage} alt="Pro En Poche" className="h-12 w-auto" />
+              <img src={siteSettings?.logo || logoImage} alt="Pro En Poche" className="h-11 w-auto" />
             </button>
 
-            <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
+            <nav className="hidden md:flex items-center gap-2 flex-1 justify-center">
               {[
                 { key: 'accueil' as const, label: 'Accueil' },
                 { key: 'apropos' as const, label: 'À Propos' },
@@ -552,53 +552,56 @@ function App() {
                     setShowDashboard(false)
                     setActiveSection(item.key)
                   }}
-                  className={`font-medium transition-colors ${
+                  className={`font-medium tracking-tight transition-all duration-300 relative group ${
                     activeSection === item.key
                       ? 'text-primary'
-                      : 'text-foreground hover:text-primary'
+                      : 'text-foreground/70 hover:text-primary'
                   }`}
                 >
                   {item.label}
+                  {activeSection === item.key && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-primary rounded-full" />
+                  )}
                 </Button>
               ))}
             </nav>
 
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-3 flex-shrink-0">
               {currentUser ? (
                 <>
                   <Button
                     variant="ghost"
                     onClick={() => setShowDashboard(!showDashboard)}
-                    className="gap-2"
+                    className="gap-2.5 hover:bg-primary/5"
                   >
-                    <ChartLine size={18} />
-                    <span className="hidden sm:inline">Tableau de bord</span>
+                    <ChartLine size={18} weight="duotone" />
+                    <span className="hidden sm:inline font-medium">Tableau de bord</span>
                   </Button>
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="gap-2">
-                        <Avatar className="h-8 w-8">
+                      <Button variant="ghost" className="gap-2.5 hover:bg-primary/5">
+                        <Avatar className="h-9 w-9 ring-2 ring-primary/10">
                           <AvatarImage src={currentUser.avatar} />
-                          <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                          <AvatarFallback className="text-xs font-semibold bg-primary text-primary-foreground">
                             {userInitials}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="hidden sm:inline">{currentUser.name}</span>
+                        <span className="hidden sm:inline font-medium">{currentUser.name}</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setShowDashboard(true)}>
-                        <ChartLine size={16} className="mr-2" />
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem onClick={() => setShowDashboard(true)} className="cursor-pointer">
+                        <ChartLine size={16} className="mr-3" weight="duotone" />
                         Tableau de bord
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setProfileEditOpen(true)}>
-                        <PencilSimple size={16} className="mr-2" />
+                      <DropdownMenuItem onClick={() => setProfileEditOpen(true)} className="cursor-pointer">
+                        <PencilSimple size={16} className="mr-3" weight="duotone" />
                         Modifier mon profil
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleSignOut}>
-                        <SignOut size={16} className="mr-2" />
+                      <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                        <SignOut size={16} className="mr-3" weight="duotone" />
                         Déconnexion
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -608,8 +611,8 @@ function App() {
                 <Button onClick={() => {
                   setAuthInitialRole(undefined)
                   setShowAuthPage(true)
-                }} className="gap-2">
-                  <UserIcon size={18} />
+                }} className="gap-2 px-6 font-medium shadow-sm hover:shadow-md transition-all duration-300">
+                  <UserIcon size={18} weight="duotone" />
                   Connexion
                 </Button>
               )}
@@ -689,32 +692,35 @@ function App() {
             </>
           )}
 
-          <main className="container mx-auto px-4 py-8">
-            <div className="mb-8 text-center">
-              <h1 className="text-5xl font-bold tracking-tight mb-4 premium-text-gradient">
-                Trouvez des Services Professionnels près de Chez Vous
+          <main className="container mx-auto px-6 py-12">
+            <div className="mb-12 text-center space-y-6">
+              <h1 className="text-6xl font-bold tracking-tight mb-6 premium-text-gradient leading-tight">
+                Trouvez des Services Professionnels
+                <br />
+                près de Chez Vous
               </h1>
-              <p className="text-xl text-muted-foreground mb-8">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Connectez-vous avec des professionnels vérifiés partout au Canada
               </p>
 
-              <div className="max-w-2xl mx-auto">
-                <div className="relative">
+              <div className="max-w-2xl mx-auto pt-4">
+                <div className="relative group">
                   <MagnifyingGlass
-                    size={20}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    size={22}
+                    weight="duotone"
+                    className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
                   />
                   <Input
                     placeholder="Recherchez des services ou des professionnels..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 h-12 text-base"
+                    className="pl-14 h-14 text-base rounded-full border-2 hover:border-primary/30 focus:border-primary transition-all duration-300 elegant-shadow"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-[280px_1fr] gap-6">
+            <div className="grid lg:grid-cols-[300px_1fr] gap-8">
               <aside className="hidden lg:block">
                 <FilterPanel
                   filters={filters}
@@ -730,15 +736,15 @@ function App() {
                 />
               </aside>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-semibold">
+                  <h2 className="text-3xl font-semibold tracking-tight">
                     {filteredProviders.length} Service{filteredProviders.length !== 1 ? 's' : ''} Disponible{filteredProviders.length !== 1 ? 's' : ''}
                   </h2>
                 </div>
 
                 {filteredProviders.length === 0 ? (
-                  <div className="text-center py-16">
+                  <div className="text-center py-24">
                     <p className="text-lg text-muted-foreground">
                       Aucun service trouvé. Essayez d'ajuster vos filtres.
                     </p>

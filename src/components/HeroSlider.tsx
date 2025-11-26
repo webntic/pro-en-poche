@@ -51,12 +51,12 @@ export function HeroSlider() {
 
   return (
     <div className="relative overflow-hidden w-full">
-      <div className="relative h-[500px] md:h-[600px] lg:h-[700px]">
+      <div className="relative h-[450px] md:h-[550px] lg:h-[650px]">
         {SLIDES.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 transition-all duration-1000 ${
+              index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
             }`}
           >
             <img
@@ -64,18 +64,18 @@ export function HeroSlider() {
               alt={slide.alt}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent">
-              <div className="container mx-auto px-4 h-full flex flex-col justify-center">
-                <div className="max-w-2xl text-white space-y-6 animate-fadeIn">
-                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent">
+              <div className="container mx-auto px-6 h-full flex flex-col justify-center">
+                <div className="max-w-3xl text-white space-y-8 animate-fadeIn">
+                  <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-2xl tracking-tight">
                     {slide.title}
                   </h2>
-                  <p className="text-xl md:text-2xl lg:text-3xl opacity-95 drop-shadow-lg">
+                  <p className="text-xl md:text-2xl lg:text-3xl opacity-95 drop-shadow-lg leading-relaxed">
                     {slide.description}
                   </p>
                   <Button 
                     size="lg" 
-                    className="premium-gradient shadow-2xl hover:shadow-primary/50 text-lg px-8 py-6 mt-4"
+                    className="premium-gradient shadow-2xl hover:shadow-primary/50 text-lg px-10 py-7 mt-6 font-semibold transition-all duration-300"
                   >
                     Découvrir les Professionnels
                   </Button>
@@ -89,29 +89,29 @@ export function HeroSlider() {
           variant="ghost"
           size="icon"
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white backdrop-blur-md h-14 w-14 rounded-full shadow-xl transition-all"
+          className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/15 hover:bg-white/25 text-white backdrop-blur-lg h-16 w-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110"
         >
-          <CaretLeft size={28} weight="bold" />
+          <CaretLeft size={32} weight="bold" />
         </Button>
 
         <Button
           variant="ghost"
           size="icon"
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white backdrop-blur-md h-14 w-14 rounded-full shadow-xl transition-all"
+          className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/15 hover:bg-white/25 text-white backdrop-blur-lg h-16 w-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110"
         >
-          <CaretRight size={28} weight="bold" />
+          <CaretRight size={32} weight="bold" />
         </Button>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 bg-black/20 backdrop-blur-md px-4 py-3 rounded-full">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 bg-black/25 backdrop-blur-lg px-5 py-3.5 rounded-full shadow-2xl">
           {SLIDES.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`h-3 rounded-full transition-all ${
+              className={`h-3 rounded-full transition-all duration-300 ${
                 index === currentSlide 
                   ? 'w-12 bg-white shadow-lg' 
-                  : 'w-3 bg-white/60 hover:bg-white/80'
+                  : 'w-3 bg-white/50 hover:bg-white/75'
               }`}
               aria-label={`Aller à la diapositive ${index + 1}`}
             />

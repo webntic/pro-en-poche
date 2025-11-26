@@ -21,28 +21,28 @@ export function ProviderCard({ provider, onBook, onViewProfile }: ProviderCardPr
     .slice(0, 2)
 
   return (
-    <Card className="premium-card p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2">
-      <div className="flex flex-col gap-4">
+    <Card className="premium-card p-7 border-0 group overflow-hidden">
+      <div className="flex flex-col gap-5">
         <div className="flex items-start gap-4">
-          <Avatar className="h-16 w-16 ring-2 ring-primary/20">
+          <Avatar className="h-20 w-20 ring-4 ring-primary/10 shadow-lg group-hover:ring-primary/20 transition-all duration-300">
             <AvatarImage src={provider.avatar} alt={provider.name} />
-            <AvatarFallback className="text-lg font-semibold premium-gradient text-primary-foreground">
+            <AvatarFallback className="text-xl font-bold premium-gradient text-primary-foreground">
               {initials}
             </AvatarFallback>
           </Avatar>
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-lg text-foreground truncate">
+            <div className="flex items-center gap-2.5 mb-2">
+              <h3 className="font-bold text-xl text-foreground truncate tracking-tight">
                 {provider.name}
               </h3>
               {provider.verified && (
-                <ShieldCheck size={18} weight="fill" className="text-secondary flex-shrink-0" />
+                <ShieldCheck size={20} weight="fill" className="text-secondary flex-shrink-0" />
               )}
             </div>
             
             {provider.profession && (
-              <p className="text-sm text-muted-foreground mb-1">{provider.profession}</p>
+              <p className="text-sm text-muted-foreground font-medium mb-2">{provider.profession}</p>
             )}
             
             <RatingDisplay 
@@ -53,59 +53,59 @@ export function ProviderCard({ provider, onBook, onViewProfile }: ProviderCardPr
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
           {provider.bio}
         </p>
 
         <div className="flex flex-wrap gap-2">
           {provider.services.slice(0, 3).map((service) => (
-            <Badge key={service} variant="secondary" className="text-xs">
+            <Badge key={service} variant="secondary" className="text-xs font-medium px-3 py-1">
               {service}
             </Badge>
           ))}
           {provider.services.length > 3 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs font-medium px-3 py-1">
               +{provider.services.length - 3} autres
             </Badge>
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <MapPin size={14} />
-              <span>{provider.location}</span>
+        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin size={16} weight="duotone" />
+              <span className="font-medium">{provider.location}</span>
             </div>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Clock size={14} />
-              <span>{provider.availability}</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock size={16} weight="duotone" />
+              <span className="font-medium">{provider.availability}</span>
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col items-end gap-1">
             <div className="text-right">
-              <div className="text-2xl font-bold text-foreground">
+              <div className="text-3xl font-bold text-foreground tracking-tight">
                 {provider.hourlyRate}$
               </div>
-              <div className="text-xs text-muted-foreground">par heure</div>
+              <div className="text-xs text-muted-foreground font-medium">par heure</div>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3 pt-2">
           {onViewProfile && (
             <Button 
               onClick={() => onViewProfile(provider)}
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 font-medium hover:bg-primary/5 hover:border-primary/30 transition-all duration-300"
             >
-              <Eye size={16} />
+              <Eye size={18} weight="duotone" />
               Voir le profil
             </Button>
           )}
           <Button 
             onClick={() => onBook(provider)}
-            className="flex-1 premium-gradient shadow-md hover:shadow-lg"
+            className="flex-1 premium-gradient shadow-md hover:shadow-xl font-medium transition-all duration-300"
           >
             Réserver
           </Button>
