@@ -425,6 +425,14 @@ function App() {
     setSiteSettings(newSettings)
   }
 
+  const handleCreateAdmin = (admin: User) => {
+    setUsers((current) => [...(current || []), admin])
+  }
+
+  const handleDeleteAdmin = (adminId: string) => {
+    setUsers((current) => (current || []).filter((u) => u.id !== adminId))
+  }
+
   const handleOpenChat = (conversation: ChatConversation) => {
     setSelectedConversation(conversation)
     setChatDialogOpen(true)
@@ -610,6 +618,9 @@ function App() {
             <SuperAdminDashboard
               settings={siteSettings}
               onUpdateSettings={handleUpdateSettings}
+              admins={(users || []).filter(u => u.role === 'admin')}
+              onCreateAdmin={handleCreateAdmin}
+              onDeleteAdmin={handleDeleteAdmin}
             />
           ) : isAdmin ? (
             <AdminDashboard

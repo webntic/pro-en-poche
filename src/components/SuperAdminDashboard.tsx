@@ -4,16 +4,37 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
-import { Gear, Image as ImageIcon, Envelope, CreditCard, ShieldCheck } from '@phosphor-icons/react'
-import { SiteSettings } from '@/lib/types'
+import { Gear, Image as ImageIcon, Envelope, CreditCard, ShieldCheck, UserPlus, Trash } from '@phosphor-icons/react'
+import { SiteSettings, User } from '@/lib/types'
 
 interface SuperAdminDashboardProps {
   settings: SiteSettings
   onUpdateSettings: (settings: SiteSettings) => void
+  admins?: User[]
+  onCreateAdmin?: (admin: User) => void
+  onDeleteAdmin?: (adminId: string) => void
 }
 
-export function SuperAdminDashboard({ settings, onUpdateSettings }: SuperAdminDashboardProps) {
+export function SuperAdminDashboard({ settings, onUpdateSettings, admins = [], onCreateAdmin, onDeleteAdmin }: SuperAdminDashboardProps) {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | undefined>(settings.logo)
   
@@ -31,6 +52,12 @@ export function SuperAdminDashboard({ settings, onUpdateSettings }: SuperAdminDa
     secretKey: settings.stripe.secretKey,
     webhookSecret: settings.stripe.webhookSecret,
   })
+
+  const [createAdminOpen, setCreateAdminOpen] = useState(false)
+  const [adminName, setAdminName] = useState('')
+  const [adminEmail, setAdminEmail] = useState('')
+  const [adminPassword, setAdminPassword] = useState('')
+  const [adminAvatar, setAdminAvatar] = useState('')
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -95,6 +122,53 @@ export function SuperAdminDashboard({ settings, onUpdateSettings }: SuperAdminDa
     toast.success('Configuration Stripe mise à jour avec succès!')
   }
 
+  const handleCreateAdmin = () => {
+    if (!adminName || !adminEmail || !adminPassword) {
+      toast.error('Veuillez remplir tous les champs obligatoires')
+      return
+    }
+
+    if (adminPassword.length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(adminEmail)) {
+      toast.error('Veuillez entrer une adresse email valide')
+      return
+    }
+
+    const newAdmin: User = {
+      id: `admin-${Date.now()}`,
+      name: adminName,
+      email: adminEmail,
+      role: 'admin',
+      avatar: adminAvatar || undefined,
+      createdAt: new Date().toISOString(),
+    }
+
+    if (onCreateAdmin) {
+      onCreateAdmin(newAdmin)
+    }
+
+    setAdminName('')
+    setAdminEmail('')
+    setAdminPassword('')
+    setAdminAvatar('')
+    setCreateAdminOpen(false)
+    toast.success('Administrateur créé avec succès!')
+  }
+
+  const handleDeleteAdmin = (adminId: string, adminName: string) => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'administrateur "${adminName}" ?`)) {
+      if (onDeleteAdmin) {
+        onDeleteAdmin(adminId)
+      }
+      toast.success('Administrateur supprimé avec succès')
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -108,10 +182,14 @@ export function SuperAdminDashboard({ settings, onUpdateSettings }: SuperAdminDa
       </div>
 
       <Tabs defaultValue="logo" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="logo" className="gap-2">
             <ImageIcon size={18} />
             Logo
+          </TabsTrigger>
+          <TabsTrigger value="admins" className="gap-2">
+            <UserPlus size={18} />
+            Admins
           </TabsTrigger>
           <TabsTrigger value="smtp" className="gap-2">
             <Envelope size={18} />
@@ -183,6 +261,163 @@ export function SuperAdminDashboard({ settings, onUpdateSettings }: SuperAdminDa
                   )}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="admins" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserPlus size={24} />
+                    Gestion des Administrateurs
+                  </CardTitle>
+                  <CardDescription>
+                    Créez et gérez les comptes administrateurs de la plateforme
+                  </CardDescription>
+                </div>
+                <Dialog open={createAdminOpen} onOpenChange={setCreateAdminOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2">
+                      <UserPlus size={18} />
+                      Créer un admin
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Créer un nouveau administrateur</DialogTitle>
+                      <DialogDescription>
+                        Remplissez les informations pour créer un compte administrateur
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="admin-name">Nom complet *</Label>
+                        <Input
+                          id="admin-name"
+                          value={adminName}
+                          onChange={(e) => setAdminName(e.target.value)}
+                          placeholder="Jean Dupont"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin-email">Email *</Label>
+                        <Input
+                          id="admin-email"
+                          type="email"
+                          value={adminEmail}
+                          onChange={(e) => setAdminEmail(e.target.value)}
+                          placeholder="jean.dupont@proenpoche.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin-password">Mot de passe *</Label>
+                        <Input
+                          id="admin-password"
+                          type="password"
+                          value={adminPassword}
+                          onChange={(e) => setAdminPassword(e.target.value)}
+                          placeholder="••••••••"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Minimum 6 caractères
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin-avatar">Photo de profil (URL)</Label>
+                        <Input
+                          id="admin-avatar"
+                          type="url"
+                          value={adminAvatar}
+                          onChange={(e) => setAdminAvatar(e.target.value)}
+                          placeholder="https://exemple.com/avatar.jpg"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setCreateAdminOpen(false)}
+                        >
+                          Annuler
+                        </Button>
+                        <Button onClick={handleCreateAdmin}>
+                          Créer l'administrateur
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {admins.length === 0 ? (
+                <div className="text-center py-12 border border-dashed rounded-lg">
+                  <UserPlus size={48} className="mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">
+                    Aucun administrateur. Créez-en un pour commencer.
+                  </p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Administrateur</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Date de création</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {admins.map((admin) => {
+                      const initials = admin.name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2)
+                      
+                      return (
+                        <TableRow key={admin.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10">
+                                <AvatarImage src={admin.avatar} />
+                                <AvatarFallback className="bg-primary text-primary-foreground">
+                                  {initials}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-medium">{admin.name}</div>
+                                <Badge variant="secondary" className="mt-1">
+                                  Administrateur
+                                </Badge>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{admin.email}</TableCell>
+                          <TableCell>
+                            {new Date(admin.createdAt).toLocaleDateString('fr-FR')}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteAdmin(admin.id, admin.name)}
+                              className="text-destructive hover:text-destructive gap-2"
+                            >
+                              <Trash size={16} />
+                              Supprimer
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
