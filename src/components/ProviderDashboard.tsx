@@ -447,8 +447,15 @@ export function ProviderDashboard({
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => onOpenChat(conversation)}
+                              onClick={() => {
+                                if (!provider.subscription?.isActive) {
+                                  toast.error('Vous devez avoir un abonnement actif pour accéder au chat')
+                                  return
+                                }
+                                onOpenChat(conversation)
+                              }}
                               className="gap-2"
+                              disabled={!provider.subscription?.isActive}
                             >
                               <ChatCircle size={16} />
                               Chater
@@ -465,11 +472,28 @@ export function ProviderDashboard({
         </TabsContent>
 
         <TabsContent value="messages" className="space-y-4">
-          <ChatList
-            conversations={conversations}
-            currentUserId={providerId}
-            onOpenChat={onOpenChat}
-          />
+          {!provider.subscription?.isActive ? (
+            <Card className="p-8 border-accent bg-accent/5">
+              <div className="text-center">
+                <ChatCircle size={48} className="mx-auto mb-4 text-accent" />
+                <h3 className="text-xl font-semibold mb-2">Abonnement requis</h3>
+                <p className="text-muted-foreground mb-6">
+                  Pour accéder à la messagerie et communiquer avec vos clients, vous devez
+                  souscrire à un plan d'abonnement.
+                </p>
+                <Button onClick={onGoToSubscription} className="gap-2">
+                  <CreditCard size={18} />
+                  Voir les plans d'abonnement
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <ChatList
+              conversations={conversations}
+              currentUserId={providerId}
+              onOpenChat={onOpenChat}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="reviews" className="space-y-4">
