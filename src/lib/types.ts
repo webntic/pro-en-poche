@@ -55,6 +55,15 @@ export interface ServiceProvider extends User {
   experience?: string
   languages?: string[]
   responseTime?: string
+  attachments?: ProviderAttachment[]
+}
+
+export interface ProviderAttachment {
+  id: string
+  name: string
+  type: 'identity' | 'certification' | 'insurance' | 'other'
+  url: string
+  uploadedAt: string
 }
 
 export interface Client extends User {

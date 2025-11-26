@@ -15,6 +15,12 @@ import {
   Briefcase,
   ChatCircle,
   Translate,
+  File,
+  FileText,
+  Download,
+  IdentificationCard,
+  ShieldCheck,
+  Paperclip,
 } from '@phosphor-icons/react'
 import { RatingDisplay } from '@/components/RatingDisplay'
 
@@ -44,20 +50,46 @@ export function ProviderProfileView({
 
   const providerReviews = reviews.filter(r => r.providerId === provider.id)
 
+  const getAttachmentIcon = (type: string) => {
+    switch (type) {
+      case 'identity':
+        return <IdentificationCard size={20} className="text-blue-500" />
+      case 'certification':
+        return <Certificate size={20} className="text-green-500" />
+      case 'insurance':
+        return <ShieldCheck size={20} className="text-purple-500" />
+      default:
+        return <FileText size={20} className="text-gray-500" />
+    }
+  }
+
+  const getAttachmentLabel = (type: string) => {
+    switch (type) {
+      case 'identity':
+        return 'Pièce d\'identité'
+      case 'certification':
+        return 'Certification'
+      case 'insurance':
+        return 'Assurance'
+      default:
+        return 'Autre document'
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="flex gap-6">
-          <Avatar className="h-32 w-32 border-4 border-primary/10">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex gap-6 flex-1">
+          <Avatar className="h-32 w-32 border-4 border-primary/10 flex-shrink-0">
             <AvatarImage src={provider.avatar} />
             <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
               {userInitials}
             </AvatarFallback>
           </Avatar>
           
-          <div className="space-y-3">
+          <div className="space-y-3 flex-1">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <h1 className="text-3xl font-bold">{provider.name}</h1>
                 {provider.verified && (
                   <Badge className="bg-green-500 text-white">
@@ -106,7 +138,7 @@ export function ProviderProfileView({
         </div>
 
         {isAdmin && !provider.verified && onApprove && onReject && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
             <Button
               onClick={() => onApprove(provider.id)}
               className="gap-2"
@@ -128,12 +160,12 @@ export function ProviderProfileView({
 
       <Separator />
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Informations de Contact</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-3">
             <div>
               <p className="text-sm text-muted-foreground">Email</p>
               <p className="font-medium">{provider.email}</p>
@@ -159,7 +191,7 @@ export function ProviderProfileView({
           </CardHeader>
           <CardContent>
             {provider.subscription ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Plan</p>
                   <Badge className={
@@ -190,6 +222,24 @@ export function ProviderProfileView({
             )}
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Disponibilité</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-sm text-muted-foreground">Horaires</p>
+              <p className="font-medium">{provider.availability}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Date d'inscription</p>
+              <p className="font-medium">
+                {new Date(provider.createdAt).toLocaleDateString('fr-FR')}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -201,23 +251,45 @@ export function ProviderProfileView({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Briefcase size={20} />
-            Services Proposés
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {provider.services.map((service, index) => (
-              <Badge key={index} variant="secondary" className="text-sm">
-                {service}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Briefcase size={20} />
+              Services Proposés
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {provider.services.map((service, index) => (
+                <Badge key={index} variant="secondary" className="text-sm">
+                  {service}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {provider.languages && provider.languages.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Translate size={20} />
+                Langues Parlées
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {provider.languages.map((lang, index) => (
+                  <Badge key={index} variant="outline" className="text-sm">
+                    {lang}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {provider.experience && (
         <Card>
@@ -254,20 +326,81 @@ export function ProviderProfileView({
         </Card>
       )}
 
-      {provider.languages && provider.languages.length > 0 && (
+      {provider.attachments && provider.attachments.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Translate size={20} />
-              Langues Parlées
+              <Paperclip size={20} />
+              Pièces Jointes ({provider.attachments.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {provider.languages.map((lang, index) => (
-                <Badge key={index} variant="outline" className="text-sm">
-                  {lang}
-                </Badge>
+            <div className="grid md:grid-cols-2 gap-4">
+              {provider.attachments.map((attachment) => (
+                <div
+                  key={attachment.id}
+                  className="flex items-start gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors group"
+                >
+                  <div className="flex-shrink-0 mt-1">
+                    {getAttachmentIcon(attachment.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="font-medium truncate">{attachment.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {getAttachmentLabel(attachment.type)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(attachment.uploadedAt).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => window.open(attachment.url, '_blank')}
+                      >
+                        <Download size={16} />
+                      </Button>
+                    </div>
+                    {attachment.url && (
+                      <div className="mt-3">
+                        {attachment.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <div className="relative rounded-md overflow-hidden border cursor-pointer hover:border-primary transition-colors">
+                            <img
+                              src={attachment.url}
+                              alt={attachment.name}
+                              className="w-full h-48 object-cover"
+                              onClick={() => window.open(attachment.url, '_blank')}
+                            />
+                          </div>
+                        ) : attachment.url.match(/\.(pdf)$/i) ? (
+                          <div className="relative rounded-md border overflow-hidden">
+                            <iframe
+                              src={`${attachment.url}#toolbar=0`}
+                              className="w-full h-96"
+                              title={attachment.name}
+                            />
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            onClick={() => window.open(attachment.url, '_blank')}
+                          >
+                            <File size={16} />
+                            Ouvrir le document
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>
@@ -280,11 +413,12 @@ export function ProviderProfileView({
             <CardTitle className="text-lg">Portfolio</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {provider.portfolioImages.map((image, index) => (
                 <div
                   key={index}
-                  className="aspect-square rounded-lg overflow-hidden bg-muted"
+                  className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                  onClick={() => window.open(image, '_blank')}
                 >
                   <img
                     src={image}
@@ -327,7 +461,7 @@ export function ProviderProfileView({
       </Card>
 
       {onClose && (
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
           <Button onClick={onClose} variant="outline">
             Fermer
           </Button>
