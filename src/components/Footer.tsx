@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { EnvelopeSimple, Question, Phone, FacebookLogo, InstagramLogo, Image } from '@phosphor-icons/react'
+import { EnvelopeSimple, Question, Phone, FacebookLogo, InstagramLogo } from '@phosphor-icons/react'
 import logoImage from '@/assets/images/logo.svg'
 import { InlineEditor } from '@/components/InlineEditor'
 
@@ -13,17 +13,7 @@ interface FooterProps {
   logo?: string
 }
 
-export function Footer({ onNavigate, aboutImage, footerDescription, onUpdateContent, editMode, logo }: FooterProps) {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file && onUpdateContent) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        onUpdateContent(['footer', 'aboutImage'], reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+export function Footer({ onNavigate, footerDescription, onUpdateContent, editMode, logo }: FooterProps) {
 
   return (
     <footer className="border-t border-border/30 premium-header mt-auto">
@@ -103,51 +93,6 @@ export function Footer({ onNavigate, aboutImage, footerDescription, onUpdateCont
           </div>
 
           <div className="space-y-5">
-            {aboutImage && (
-              <div className="mb-4 relative group">
-                <img 
-                  src={aboutImage} 
-                  alt="À propos de Pro En Poche" 
-                  className="w-full h-32 object-cover rounded-lg shadow-md"
-                />
-                {editMode && onUpdateContent && (
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                      <div className="flex items-center gap-2 text-white px-4 py-2 bg-primary rounded-lg hover:bg-primary/90">
-                        <Image size={20} weight="duotone" />
-                        <span className="text-sm font-medium">Changer l'image</span>
-                      </div>
-                    </label>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {editMode && !aboutImage && onUpdateContent && (
-              <div className="mb-4">
-                <label className="cursor-pointer block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 hover:border-primary/60 transition-colors flex flex-col items-center justify-center text-center">
-                    <Image size={32} weight="duotone" className="text-primary mb-2" />
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Ajouter une image
-                    </span>
-                  </div>
-                </label>
-              </div>
-            )}
-
             <img src={logo || logoImage} alt="Pro En Poche" className="h-11 w-auto mb-3" />
             <p className="text-sm text-muted-foreground leading-relaxed">
               <InlineEditor
