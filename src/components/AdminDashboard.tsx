@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { User, ServiceProvider, Booking, Review } from '@/lib/types'
-import { Users, Briefcase, CheckCircle, XCircle, Clock, Star, CalendarBlank } from '@phosphor-icons/react'
+import { Users, Briefcase, CheckCircle, XCircle, Clock, Star, CalendarBlank, Eye } from '@phosphor-icons/react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { ProviderProfileView } from '@/components/ProviderProfileView'
 import { toast } from 'sonner'
 
 interface AdminDashboardProps {
@@ -47,10 +54,17 @@ export function AdminDashboard({
 }: AdminDashboardProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [viewProfileOpen, setViewProfileOpen] = useState(false)
+  const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
 
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user)
     setDeleteConfirmOpen(true)
+  }
+
+  const handleViewProfile = (provider: ServiceProvider) => {
+    setSelectedProvider(provider)
+    setViewProfileOpen(true)
   }
 
   const handleConfirmDelete = () => {
@@ -60,6 +74,18 @@ export function AdminDashboard({
     }
     setDeleteConfirmOpen(false)
     setSelectedUser(null)
+  }
+
+  const handleApproveFromProfile = (providerId: string) => {
+    onApproveProvider(providerId)
+    setViewProfileOpen(false)
+    setSelectedProvider(null)
+  }
+
+  const handleRejectFromProfile = (providerId: string) => {
+    onRejectProvider(providerId)
+    setViewProfileOpen(false)
+    setSelectedProvider(null)
   }
 
   const clients = users.filter(u => u.role === 'client')
@@ -198,6 +224,15 @@ export function AdminDashboard({
                         <div className="flex gap-2 mt-3">
                           <Button
                             size="sm"
+                            variant="outline"
+                            onClick={() => handleViewProfile(provider)}
+                            className="gap-1"
+                          >
+                            <Eye size={16} />
+                            Voir le profil
+                          </Button>
+                          <Button
+                            size="sm"
                             onClick={() => onApproveProvider(provider.id)}
                             className="gap-1"
                           >
@@ -285,13 +320,24 @@ export function AdminDashboard({
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteClick(provider)}
-                        >
-                          Supprimer
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewProfile(provider)}
+                            className="gap-1"
+                          >
+                            <Eye size={14} />
+                            Voir
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteClick(provider)}
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -479,6 +525,24 @@ export function AdminDashboard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={viewProfileOpen} onOpenChange={setViewProfileOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Profil du Prestataire</DialogTitle>
+          </DialogHeader>
+          {selectedProvider && (
+            <ProviderProfileView
+              provider={selectedProvider}
+              reviews={reviews}
+              isAdmin={true}
+              onApprove={handleApproveFromProfile}
+              onReject={handleRejectFromProfile}
+              onClose={() => setViewProfileOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

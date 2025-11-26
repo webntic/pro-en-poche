@@ -2,16 +2,17 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Clock, ShieldCheck } from '@phosphor-icons/react'
+import { MapPin, Clock, ShieldCheck, Eye } from '@phosphor-icons/react'
 import { ServiceProvider } from '@/lib/types'
 import { RatingDisplay } from './RatingDisplay'
 
 interface ProviderCardProps {
   provider: ServiceProvider
   onBook: (provider: ServiceProvider) => void
+  onViewProfile?: (provider: ServiceProvider) => void
 }
 
-export function ProviderCard({ provider, onBook }: ProviderCardProps) {
+export function ProviderCard({ provider, onBook, onViewProfile }: ProviderCardProps) {
   const initials = provider.name
     .split(' ')
     .map(n => n[0])
@@ -39,6 +40,10 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
                 <ShieldCheck size={18} weight="fill" className="text-secondary flex-shrink-0" />
               )}
             </div>
+            
+            {provider.profession && (
+              <p className="text-sm text-muted-foreground mb-1">{provider.profession}</p>
+            )}
             
             <RatingDisplay 
               rating={provider.rating} 
@@ -84,13 +89,26 @@ export function ProviderCard({ provider, onBook }: ProviderCardProps) {
               </div>
               <div className="text-xs text-muted-foreground">par heure</div>
             </div>
-            <Button 
-              onClick={() => onBook(provider)}
-              className="w-full premium-gradient shadow-md hover:shadow-lg"
-            >
-              Réserver
-            </Button>
           </div>
+        </div>
+
+        <div className="flex gap-2">
+          {onViewProfile && (
+            <Button 
+              onClick={() => onViewProfile(provider)}
+              variant="outline"
+              className="flex-1 gap-2"
+            >
+              <Eye size={16} />
+              Voir le profil
+            </Button>
+          )}
+          <Button 
+            onClick={() => onBook(provider)}
+            className="flex-1 premium-gradient shadow-md hover:shadow-lg"
+          >
+            Réserver
+          </Button>
         </div>
       </div>
     </Card>

@@ -159,13 +159,15 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
       reviewCount: 0,
       verified: false,
       phone: data.phone,
-      address: `${data.address1}${data.address2 ? ', ' + data.address2 : ''}, ${data.city}, ${data.province} ${data.postalCode}`,
-      coverageZones: data.coverageZones,
-      experienceYears: data.experienceYears ? parseInt(data.experienceYears) : undefined,
+      address: `${data.address1}${data.address2 ? ', ' + data.address2 : ''}, ${data.city}, ${data.province}, ${data.postalCode}`,
+      profession: data.profession,
+      experience: data.experienceYears ? `${data.experienceYears} ans d'expérience` : undefined,
+      responseTime: '24 heures',
+      languages: ['Français'],
     } as any
 
     onAuth(newProvider)
-    onClose()
+    toast.info('Votre compte prestataire sera disponible après validation par un administrateur')
   }
 
   const handleClientFormSubmit = (data: ClientFormData) => {

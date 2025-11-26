@@ -28,6 +28,7 @@ export interface ProviderFormData {
   postalCode: string
   country: string
   category: string
+  profession: string
   description: string
   coverageZones: string
   availability: string[]
@@ -94,6 +95,7 @@ export function MultiStepProviderForm({ onSubmit, onBack }: MultiStepProviderFor
     postalCode: '',
     country: 'Canada',
     category: '',
+    profession: '',
     description: '',
     coverageZones: '',
     availability: [],
@@ -439,6 +441,19 @@ export function MultiStepProviderForm({ onSubmit, onBack }: MultiStepProviderFor
                   </Card>
                 ))}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="profession" className="text-base">
+                Titre professionnel <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="profession"
+                placeholder="Ex: Plombier Certifié, Designer d'Intérieur, etc."
+                value={formData.profession}
+                onChange={(e) => updateFormData({ profession: e.target.value })}
+                className="h-12 text-base"
+              />
             </div>
           </div>
         )}

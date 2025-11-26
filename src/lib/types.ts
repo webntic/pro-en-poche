@@ -49,6 +49,12 @@ export interface ServiceProvider extends User {
   reviewCount: number
   verified: boolean
   subscription?: Subscription
+  profession?: string
+  portfolioImages?: string[]
+  certifications?: string[]
+  experience?: string
+  languages?: string[]
+  responseTime?: string
 }
 
 export interface Client extends User {

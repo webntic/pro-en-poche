@@ -13,6 +13,7 @@ import {
 import { Toaster } from '@/components/ui/sonner'
 import { MagnifyingGlass, User as UserIcon, SignOut, ChartLine } from '@phosphor-icons/react'
 import { ProviderCard } from '@/components/ProviderCard'
+import { ProviderPublicPage } from '@/components/ProviderPublicPage'
 import { FilterPanel, FilterState } from '@/components/FilterPanel'
 import { BookingDialog } from '@/components/BookingDialog'
 import { AuthPage } from '@/components/AuthPage'
@@ -82,6 +83,7 @@ function App() {
   const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number | null } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
+  const [showProviderProfile, setShowProviderProfile] = useState(false)
   const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'faq'>('accueil')
   
   const [filters, setFilters] = useState<FilterState>({
@@ -134,7 +136,19 @@ function App() {
       return
     }
     setSelectedProvider(provider)
+    setShowProviderProfile(false)
     setBookingDialogOpen(true)
+  }
+
+  const handleViewProviderProfile = (provider: ServiceProvider) => {
+    setSelectedProvider(provider)
+    setShowProviderProfile(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleBackFromProfile = () => {
+    setShowProviderProfile(false)
+    setSelectedProvider(null)
   }
 
   const handleBuyPlan = (planName: string) => {
@@ -464,6 +478,13 @@ function App() {
           initialRole={authInitialRole}
           logo={siteSettings?.logo}
         />
+      ) : showProviderProfile && selectedProvider ? (
+        <ProviderPublicPage
+          provider={selectedProvider}
+          reviews={reviews || []}
+          onBook={handleBook}
+          onBack={handleBackFromProfile}
+        />
       ) : (
         <div className="min-h-screen bg-background flex flex-col">
       <header className="premium-header sticky top-0 z-50">
@@ -683,6 +704,7 @@ function App() {
                         key={provider.id}
                         provider={provider}
                         onBook={handleBook}
+                        onViewProfile={handleViewProviderProfile}
                       />
                     ))}
                   </div>
