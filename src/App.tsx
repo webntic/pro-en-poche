@@ -17,6 +17,7 @@ import { FilterPanel, FilterState } from '@/components/FilterPanel'
 import { BookingDialog } from '@/components/BookingDialog'
 import { AuthDialog } from '@/components/AuthDialog'
 import { ReviewDialog } from '@/components/ReviewDialog'
+import { PaymentDialog } from '@/components/PaymentDialog'
 import { Dashboard } from '@/components/Dashboard'
 import { ProviderDashboard } from '@/components/ProviderDashboard'
 import { AdminDashboard } from '@/components/AdminDashboard'
@@ -66,9 +67,11 @@ function App() {
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number | null } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDashboard, setShowDashboard] = useState(false)
   const [activeSection, setActiveSection] = useState<'accueil' | 'apropos' | 'services' | 'tarifs' | 'prestataires' | 'faq'>('accueil')
@@ -129,34 +132,93 @@ function App() {
     } else if (currentUser.role !== 'provider') {
       toast.error('Seuls les prestataires peuvent souscrire à un plan')
     } else {
-      const startDate = new Date()
-      const endDate = new Date()
-      endDate.setMonth(endDate.getMonth() + 1)
+      let planPrice: number | null = null
       
-      const subscription = {
-        plan: planName.toLowerCase() as 'basic' | 'premium' | 'enterprise',
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        isActive: true,
+      if (planName === 'VIP') {
+        planPrice = 59
+      } else if (planName === 'PREMIUM') {
+        planPrice = 99
       }
       
-      setProviders((current) =>
-        (current || []).map((p) =>
-          p.id === currentUser.id ? { ...p, subscription } : p
-        )
-      )
+      setSelectedPlan({ name: planName, price: planPrice })
       
-      setCurrentUser((current) => {
-        if (current && current.role === 'provider') {
-          return { ...current, subscription } as ServiceProvider
-        }
-        return current || null
-      })
-      
-      toast.success(`Plan ${planName} activé avec succès! Vous pouvez maintenant créer des annonces.`)
-      setShowDashboard(true)
-      setActiveSection('accueil')
+      if (planPrice === null) {
+        activateFreePlan()
+      } else {
+        setPaymentDialogOpen(true)
+      }
     }
+  }
+
+  const activateFreePlan = () => {
+    const startDate = new Date()
+    const endDate = new Date()
+    endDate.setMonth(endDate.getMonth() + 1)
+    
+    const subscription = {
+      plan: 'basic' as const,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      isActive: true,
+    }
+    
+    setProviders((current) =>
+      (current || []).map((p) =>
+        p.id === currentUser?.id ? { ...p, subscription } : p
+      )
+    )
+    
+    setCurrentUser((current) => {
+      if (current && current.role === 'provider') {
+        return { ...current, subscription } as ServiceProvider
+      }
+      return current || null
+    })
+    
+    toast.success('Plan ESSENTIEL activé avec succès! Vous pouvez maintenant créer des annonces.')
+    setShowDashboard(true)
+    setActiveSection('accueil')
+  }
+
+  const handlePaymentSuccess = () => {
+    if (!selectedPlan || !currentUser) return
+    
+    const startDate = new Date()
+    const endDate = new Date()
+    endDate.setMonth(endDate.getMonth() + 1)
+    
+    let planType: 'basic' | 'premium' | 'enterprise' = 'basic'
+    
+    if (selectedPlan.name === 'VIP') {
+      planType = 'premium'
+    } else if (selectedPlan.name === 'PREMIUM') {
+      planType = 'enterprise'
+    }
+    
+    const subscription = {
+      plan: planType,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      isActive: true,
+    }
+    
+    setProviders((current) =>
+      (current || []).map((p) =>
+        p.id === currentUser.id ? { ...p, subscription } : p
+      )
+    )
+    
+    setCurrentUser((current) => {
+      if (current && current.role === 'provider') {
+        return { ...current, subscription } as ServiceProvider
+      }
+      return current || null
+    })
+    
+    toast.success(`Plan ${selectedPlan.name} activé avec succès! Paiement de ${selectedPlan.price}$ effectué.`)
+    setShowDashboard(true)
+    setActiveSection('accueil')
+    setSelectedPlan(null)
   }
 
   const handleGoToSubscription = () => {
@@ -595,6 +657,16 @@ function App() {
           providerId={currentUser.id}
           editAnnouncement={editingAnnouncement || undefined}
           onSubmit={handleSubmitAnnouncement}
+        />
+      )}
+
+      {selectedPlan && (
+        <PaymentDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          planName={selectedPlan.name}
+          planPrice={selectedPlan.price}
+          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
 

@@ -131,7 +131,7 @@ export function PricingSection({ onBuyPlan }: PricingSectionProps) {
                   size="lg"
                   onClick={() => onBuyPlan?.(plan.name)}
                 >
-                  Buy Plan
+                  {plan.price ? 'Souscrire' : 'Commencer gratuitement'}
                 </Button>
               </CardFooter>
             </Card>
