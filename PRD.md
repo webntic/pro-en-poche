@@ -82,6 +82,28 @@ A professional services marketplace connecting service providers with clients th
 - **Progression**: Login as provider → View stats (announcements, bookings, earnings, rating) → Manage announcements tab → View received bookings → Read customer reviews
 - **Success criteria**: All provider-specific data isolated and displayed, real-time updates on bookings and payments, announcement CRUD operations work flawlessly
 
+### Real-Time Notification System
+- **Functionality**: Comprehensive notification center displaying all platform activities and user-specific events with persistent storage and visual indicators
+- **Purpose**: Keeps users informed of important actions, bookings, payments, messages, and status changes without requiring constant page checking
+- **Trigger**: Various platform events (new bookings, messages, reviews, account approvals, payments, announcements)
+- **Progression**: User performs action triggering notification → System creates notification for relevant user(s) → Notification bell icon shows unread count → User clicks bell → Notification center opens → Browse notifications → Click notification to navigate to relevant section → Mark as read or delete
+- **Success criteria**: 
+  - Notifications appear instantly for all relevant events
+  - Unread count badge displays on bell icon with accurate count (shows "99+" for counts over 99)
+  - Notification center displays chronologically with visual distinction between read/unread
+  - Users can mark individual notifications as read, mark all as read, or delete notifications
+  - Notifications persist across sessions using spark.kv storage
+  - Clicking notifications with links navigates to relevant dashboard section
+  - Different notification types have distinct icons and color coding for easy scanning
+  - Notifications include: booking created/confirmed/completed, payment received/released, reviews received, messages received, account approved/rejected, subscription activated/expiring, announcement created/updated, admin messages
+
+### Messaging Integration with Notifications
+- **Functionality**: Chat system generates real-time notifications when new messages arrive
+- **Purpose**: Ensures users never miss important communications about their services or bookings
+- **Trigger**: User sends message in booking conversation
+- **Progression**: User sends message → Recipient receives notification → Notification shows sender name and "vous a envoyé un message" → Click notification opens chat conversation → Mark notification as read
+- **Success criteria**: Message notifications appear immediately, include sender context, clicking navigates directly to conversation, notifications cleared when conversation viewed
+
 ## Edge Case Handling
 
 - **No-show appointments**: Automatic notification system prompts client to confirm/cancel 24h before, cancellation policy clearly stated during booking

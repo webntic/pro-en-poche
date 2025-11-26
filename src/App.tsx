@@ -43,9 +43,12 @@ import { ProfileEditDialog } from '@/components/ProfileEditDialog'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ContentEditToggle } from '@/components/ContentEditToggle'
 import { InlineEditor } from '@/components/InlineEditor'
+import { NotificationBell } from '@/components/NotificationBell'
+import { NotificationCenter } from '@/components/NotificationCenter'
 import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, SiteContent, ChatMessage, ChatConversation } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { DEFAULT_SITE_CONTENT } from '@/lib/default-content'
+import { useNotifications } from '@/hooks/use-notifications'
 import { toast } from 'sonner'
 import logoImage from '@/assets/images/logo.svg'
 
@@ -75,6 +78,14 @@ function App() {
   })
   const [siteContent, setSiteContent] = useKV<SiteContent>('site-content', DEFAULT_SITE_CONTENT)
   const [contentEditMode, setContentEditMode] = useState(false)
+  
+  const { 
+    notifications, 
+    addNotification, 
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification 
+  } = useNotifications()
 
   const [authOpen, setAuthOpen] = useState(false)
   const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
@@ -87,6 +98,7 @@ function App() {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
   const [chatDialogOpen, setChatDialogOpen] = useState(false)
   const [profileEditOpen, setProfileEditOpen] = useState(false)
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [selectedConversation, setSelectedConversation] = useState<ChatConversation | null>(null)
@@ -218,6 +230,18 @@ function App() {
       return current || null
     })
     
+    if (currentUser) {
+      addNotification(
+        currentUser.id,
+        'subscription_activated',
+        'Plan activé!',
+        'Votre plan ESSENTIEL a été activé avec succès. Vous pouvez maintenant créer des annonces.',
+        undefined,
+        { plan: 'basic' },
+        false
+      )
+    }
+    
     toast.success('Plan ESSENTIEL activé avec succès! Vous pouvez maintenant créer des annonces.')
     setShowDashboard(true)
     setActiveSection('accueil')
@@ -258,6 +282,16 @@ function App() {
       return current || null
     })
     
+    addNotification(
+      currentUser.id,
+      'subscription_activated',
+      `Plan ${selectedPlan.name} activé!`,
+      `Votre plan ${selectedPlan.name} a été activé avec succès. Paiement de ${selectedPlan.price}$ effectué.`,
+      undefined,
+      { plan: planType, price: selectedPlan.price },
+      false
+    )
+    
     toast.success(`Plan ${selectedPlan.name} activé avec succès! Paiement de ${selectedPlan.price}$ effectué.`)
     setShowDashboard(true)
     setActiveSection('accueil')
@@ -279,17 +313,55 @@ function App() {
     
     setBookings((current) => [...(current || []), newBooking])
     setBookingDialogOpen(false)
+    
+    const provider = providers?.find(p => p.id === bookingData.providerId)
+    
+    addNotification(
+      bookingData.providerId,
+      'booking_created',
+      'Nouvelle réservation',
+      `Vous avez reçu une nouvelle réservation pour ${bookingData.serviceType}`,
+      undefined,
+      { bookingId: newBooking.id },
+      false
+    )
+    
+    addNotification(
+      bookingData.clientId,
+      'booking_confirmed',
+      'Réservation confirmée',
+      `Votre réservation avec ${provider?.name || 'le prestataire'} a été confirmée`,
+      undefined,
+      { bookingId: newBooking.id },
+      false
+    )
+    
     toast.success('Paiement effectué avec succès! Réservation confirmée. Le montant est conservé en garantie jusqu\'à la fin du service.', {
       duration: 5000,
     })
   }
 
   const handleMarkComplete = (bookingId: string) => {
+    const booking = bookings?.find(b => b.id === bookingId)
+    
     setBookings((current) =>
       (current || []).map((b) =>
         b.id === bookingId ? { ...b, status: 'completed', completedAt: new Date().toISOString() } : b
       )
     )
+    
+    if (booking) {
+      addNotification(
+        booking.clientId,
+        'booking_completed',
+        'Service terminé',
+        'Le prestataire a marqué le service comme terminé. Vous pouvez maintenant laisser un avis.',
+        undefined,
+        { bookingId },
+        false
+      )
+    }
+    
     toast.success('Service marqué comme terminé!')
   }
 
@@ -328,6 +400,26 @@ function App() {
       )
     )
     
+    addNotification(
+      reviewData.providerId,
+      'review_received',
+      'Nouvel avis reçu',
+      `Vous avez reçu un avis ${reviewData.rating} étoiles`,
+      undefined,
+      { reviewId: newReview.id, rating: reviewData.rating },
+      false
+    )
+    
+    addNotification(
+      reviewData.providerId,
+      'payment_released',
+      'Paiement libéré',
+      'Le paiement pour votre service a été libéré suite à l\'avis du client',
+      undefined,
+      { bookingId: reviewData.bookingId },
+      false
+    )
+    
     setReviewDialogOpen(false)
     toast.success('Avis soumis! Le paiement a été libéré au prestataire.')
   }
@@ -351,6 +443,19 @@ function App() {
             : a
         )
       )
+      
+      if (currentUser) {
+        addNotification(
+          currentUser.id,
+          'announcement_updated',
+          'Annonce mise à jour',
+          `Votre annonce "${announcementData.title}" a été mise à jour avec succès`,
+          undefined,
+          { announcementId: editingAnnouncement.id },
+          false
+        )
+      }
+      
       toast.success('Annonce mise à jour avec succès!')
     } else {
       const newAnnouncement: Announcement = {
@@ -360,6 +465,19 @@ function App() {
         updatedAt: new Date().toISOString(),
       }
       setAnnouncements((current) => [...(current || []), newAnnouncement])
+      
+      if (currentUser) {
+        addNotification(
+          currentUser.id,
+          'announcement_created',
+          'Annonce créée',
+          `Votre annonce "${announcementData.title}" a été créée avec succès`,
+          undefined,
+          { announcementId: newAnnouncement.id },
+          false
+        )
+      }
+      
       toast.success('Annonce créée avec succès!')
     }
     setEditingAnnouncement(null)
@@ -387,11 +505,35 @@ function App() {
     const provider = providers?.find(p => p.id === providerId)
     if (provider) {
       setUsers((current) => [...(current || []), provider])
+      
+      addNotification(
+        providerId,
+        'account_approved',
+        'Compte approuvé!',
+        'Félicitations! Votre compte prestataire a été approuvé. Vous pouvez maintenant commencer à recevoir des réservations.',
+        undefined,
+        undefined,
+        false
+      )
     }
     toast.success('Prestataire approuvé avec succès! Un email de confirmation a été envoyé.')
   }
 
   const handleRejectProvider = (providerId: string) => {
+    const provider = providers?.find(p => p.id === providerId)
+    
+    if (provider) {
+      addNotification(
+        providerId,
+        'account_rejected',
+        'Demande refusée',
+        'Votre demande de compte prestataire a été refusée. Veuillez nous contacter pour plus d\'informations.',
+        undefined,
+        undefined,
+        false
+      )
+    }
+    
     setProviders((current) => (current || []).filter((p) => p.id !== providerId))
     toast.success('Prestataire rejeté. Un email d\'information a été envoyé.')
   }
@@ -501,6 +643,20 @@ function App() {
     }
     
     setMessages((current) => [...(current || []), newMessage])
+    
+    const recipientId = currentUser.id === selectedConversation.providerId
+      ? selectedConversation.clientId
+      : selectedConversation.providerId
+    
+    addNotification(
+      recipientId,
+      'message_received',
+      'Nouveau message',
+      `${currentUser.name} vous a envoyé un message`,
+      undefined,
+      { bookingId: selectedConversation.bookingId },
+      false
+    )
   }
 
   const handleFooterNavigate = (section: 'faq') => {
@@ -604,6 +760,12 @@ function App() {
             <div className="flex items-center gap-3 flex-shrink-0">
               {currentUser ? (
                 <>
+                  <NotificationBell
+                    notifications={notifications}
+                    currentUserId={currentUser.id}
+                    onClick={() => setNotificationCenterOpen(true)}
+                  />
+                  
                   <Button
                     variant="ghost"
                     onClick={() => setShowDashboard(!showDashboard)}
@@ -908,6 +1070,23 @@ function App() {
           onOpenChange={setProfileEditOpen}
           user={currentUser}
           onSave={handleUpdateProfile}
+        />
+      )}
+
+      {currentUser && (
+        <NotificationCenter
+          open={notificationCenterOpen}
+          onOpenChange={setNotificationCenterOpen}
+          currentUserId={currentUser.id}
+          notifications={notifications}
+          onMarkAsRead={markAsRead}
+          onMarkAllAsRead={() => markAllAsRead(currentUser.id)}
+          onDelete={deleteNotification}
+          onNavigate={(link) => {
+            if (link) {
+              setShowDashboard(true)
+            }
+          }}
         />
       )}
 

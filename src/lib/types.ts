@@ -248,3 +248,32 @@ export interface ChatConversation {
   lastMessageAt?: string
   unreadCount: number
 }
+
+export type NotificationType = 
+  | 'booking_created'
+  | 'booking_confirmed'
+  | 'booking_completed'
+  | 'booking_cancelled'
+  | 'payment_received'
+  | 'payment_released'
+  | 'review_received'
+  | 'message_received'
+  | 'account_approved'
+  | 'account_rejected'
+  | 'subscription_activated'
+  | 'subscription_expiring'
+  | 'announcement_created'
+  | 'announcement_updated'
+  | 'admin_message'
+
+export interface Notification {
+  id: string
+  userId: string
+  type: NotificationType
+  title: string
+  message: string
+  link?: string
+  data?: Record<string, any>
+  isRead: boolean
+  createdAt: string
+}
