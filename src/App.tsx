@@ -273,7 +273,9 @@ function App() {
     
     setBookings((current) => [...(current || []), newBooking])
     setBookingDialogOpen(false)
-    toast.success('Réservation confirmée! Le paiement est conservé en garantie.')
+    toast.success('Paiement effectué avec succès! Réservation confirmée. Le montant est conservé en garantie jusqu\'à la fin du service.', {
+      duration: 5000,
+    })
   }
 
   const handleMarkComplete = (bookingId: string) => {
