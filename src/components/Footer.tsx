@@ -10,9 +10,10 @@ interface FooterProps {
   footerDescription?: string
   onUpdateContent?: (path: string[], value: string) => void
   editMode?: boolean
+  logo?: string
 }
 
-export function Footer({ onNavigate, aboutImage, footerDescription, onUpdateContent, editMode }: FooterProps) {
+export function Footer({ onNavigate, aboutImage, footerDescription, onUpdateContent, editMode, logo }: FooterProps) {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && onUpdateContent) {
@@ -147,7 +148,7 @@ export function Footer({ onNavigate, aboutImage, footerDescription, onUpdateCont
               </div>
             )}
 
-            <img src={logoImage} alt="Pro En Poche" className="h-11 w-auto mb-3" />
+            <img src={logo || logoImage} alt="Pro En Poche" className="h-11 w-auto mb-3" />
             <p className="text-sm text-muted-foreground leading-relaxed">
               <InlineEditor
                 value={footerDescription || 'Pro En Poche est la plateforme qui connecte les professionnels de services avec les clients partout au Canada.'}

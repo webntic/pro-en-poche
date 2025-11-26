@@ -924,6 +924,7 @@ function App() {
         footerDescription={siteContent?.footer.description}
         onUpdateContent={handleUpdateContent}
         editMode={contentEditMode}
+        logo={siteSettings?.logo}
       />
 
       <CookieConsent />
