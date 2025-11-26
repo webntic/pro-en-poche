@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Toaster } from '@/components/ui/sonner'
-import { MagnifyingGlass, User as UserIcon, SignOut, ChartLine } from '@phosphor-icons/react'
+import { MagnifyingGlass, User as UserIcon, SignOut, ChartLine, PencilSimple } from '@phosphor-icons/react'
 import { ProviderCard } from '@/components/ProviderCard'
 import { ProviderPublicPage } from '@/components/ProviderPublicPage'
 import { FilterPanel, FilterState } from '@/components/FilterPanel'
@@ -36,6 +36,7 @@ import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
 import { FAQSection } from '@/components/FAQSection'
 import { Footer } from '@/components/Footer'
 import { ProviderRegistrationSuccess } from '@/components/ProviderRegistrationSuccess'
+import { ProfileEditDialog } from '@/components/ProfileEditDialog'
 import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings, ChatMessage, ChatConversation } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
@@ -76,6 +77,7 @@ function App() {
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
   const [chatDialogOpen, setChatDialogOpen] = useState(false)
+  const [profileEditOpen, setProfileEditOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [selectedConversation, setSelectedConversation] = useState<ChatConversation | null>(null)
@@ -459,6 +461,27 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const handleUpdateProfile = (updates: Partial<User | ServiceProvider>) => {
+    if (!currentUser) return
+
+    const updatedUser = { ...currentUser, ...updates }
+    setCurrentUser(updatedUser)
+
+    setUsers((current) =>
+      (current || []).map((u) =>
+        u.id === currentUser.id ? { ...u, ...updates } : u
+      )
+    )
+
+    if (currentUser.role === 'provider') {
+      setProviders((current) =>
+        (current || []).map((p) =>
+          p.id === currentUser.id ? { ...p, ...updates } as ServiceProvider : p
+        )
+      )
+    }
+  }
+
   return (
     <>
       {showProviderSuccess && pendingProviderData ? (
@@ -555,6 +578,10 @@ function App() {
                         <ChartLine size={16} className="mr-2" />
                         Tableau de bord
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setProfileEditOpen(true)}>
+                        <PencilSimple size={16} className="mr-2" />
+                        Modifier mon profil
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut}>
                         <SignOut size={16} className="mr-2" />
@@ -609,6 +636,7 @@ function App() {
               onToggleAnnouncementStatus={handleToggleAnnouncementStatus}
               onGoToSubscription={handleGoToSubscription}
               onOpenChat={handleOpenChat}
+              onEditProfile={() => setProfileEditOpen(true)}
             />
           ) : (
             <Dashboard
@@ -622,6 +650,7 @@ function App() {
               onMarkComplete={handleMarkComplete}
               onOpenReview={handleOpenReview}
               onOpenChat={handleOpenChat}
+              onEditProfile={() => setProfileEditOpen(true)}
             />
           )}
         </main>
@@ -780,6 +809,15 @@ function App() {
           }
           messages={(messages || []).filter(m => m.bookingId === selectedConversation.bookingId)}
           onSendMessage={handleSendMessage}
+        />
+      )}
+
+      {currentUser && (
+        <ProfileEditDialog
+          open={profileEditOpen}
+          onOpenChange={setProfileEditOpen}
+          user={currentUser}
+          onSave={handleUpdateProfile}
         />
       )}
 

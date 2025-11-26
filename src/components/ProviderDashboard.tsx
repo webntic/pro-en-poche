@@ -23,6 +23,7 @@ import {
   Trash,
   CheckCircle,
   ChatCircle,
+  PencilSimple,
 } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -42,6 +43,7 @@ interface ProviderDashboardProps {
   onToggleAnnouncementStatus: (announcementId: string, isActive: boolean) => void
   onGoToSubscription: () => void
   onOpenChat: (conversation: ChatConversation) => void
+  onEditProfile?: () => void
 }
 
 export function ProviderDashboard({
@@ -58,6 +60,7 @@ export function ProviderDashboard({
   onToggleAnnouncementStatus,
   onGoToSubscription,
   onOpenChat,
+  onEditProfile,
 }: ProviderDashboardProps) {
   const providerBookings = bookings.filter((b) => b.providerId === providerId)
   const providerReviews = reviews.filter((r) => r.providerId === providerId)
@@ -143,9 +146,17 @@ export function ProviderDashboard({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight mb-2">Tableau de bord Prestataire</h2>
-        <p className="text-muted-foreground">Gérez vos annonces, réservations et avis</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight mb-2">Tableau de bord Prestataire</h2>
+          <p className="text-muted-foreground">Gérez vos annonces, réservations et avis</p>
+        </div>
+        {onEditProfile && (
+          <Button onClick={onEditProfile} variant="outline" className="gap-2">
+            <PencilSimple size={18} />
+            Modifier mon profil
+          </Button>
+        )}
       </div>
 
       {provider.subscription?.isActive ? (

@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Booking, Review, ServiceProvider, ChatMessage, ChatConversation } from '@/lib/types'
-import { Calendar, CreditCard, Star, Users, CheckCircle, ChatCircle } from '@phosphor-icons/react'
+import { Calendar, CreditCard, Star, Users, CheckCircle, ChatCircle, PencilSimple } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { ChatList } from '@/components/ChatList'
 
@@ -26,6 +26,7 @@ interface DashboardProps {
   onMarkComplete: (bookingId: string) => void
   onOpenReview: (booking: Booking) => void
   onOpenChat: (conversation: ChatConversation) => void
+  onEditProfile?: () => void
 }
 
 export function Dashboard({ 
@@ -39,6 +40,7 @@ export function Dashboard({
   onMarkComplete,
   onOpenReview,
   onOpenChat,
+  onEditProfile,
 }: DashboardProps) {
   const stats = {
     totalBookings: bookings.length,
@@ -98,11 +100,19 @@ export function Dashboard({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight mb-2">Mon tableau de bord</h2>
-        <p className="text-muted-foreground">
-          Gérez vos réservations et vos avis
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight mb-2">Mon tableau de bord</h2>
+          <p className="text-muted-foreground">
+            Gérez vos réservations et vos avis
+          </p>
+        </div>
+        {onEditProfile && (
+          <Button onClick={onEditProfile} variant="outline" className="gap-2">
+            <PencilSimple size={18} />
+            Modifier mon profil
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
