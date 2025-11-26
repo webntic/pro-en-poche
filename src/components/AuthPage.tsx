@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Logo } from '@/components/Logo'
 import logoImage from '@/assets/images/logo.svg'
+import { MultiStepProviderForm, ProviderFormData } from '@/components/MultiStepProviderForm'
 
 interface AuthPageProps {
   onAuth: (user: User) => void
@@ -22,7 +23,7 @@ interface AuthPageProps {
 }
 
 export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) {
-  const [mode, setMode] = useState<'signin' | 'signup' | 'select-role'>('signin')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'select-role' | 'provider-multistep'>('signin')
   const [role, setRole] = useState<UserRole>(initialRole || 'client')
 
   useEffect(() => {
@@ -121,7 +122,11 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
 
   const handleRoleSelection = (selectedRole: UserRole) => {
     setRole(selectedRole)
-    setMode('select-role')
+    if (selectedRole === 'provider') {
+      setMode('provider-multistep')
+    } else {
+      setMode('select-role')
+    }
   }
 
   const handleBackToSignup = () => {
@@ -129,18 +134,93 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
     setRole(initialRole || 'client')
   }
 
+  const handleProviderFormSubmit = (data: ProviderFormData) => {
+    const hourlyRateMap: Record<string, number> = {
+      A: 10,
+      B: 20,
+      C: 37.5,
+      D: 75,
+      E: 125,
+    }
+
+    const newProvider: User = {
+      id: `provider-${Date.now()}`,
+      email: data.email,
+      name: `${data.firstName} ${data.lastName}`,
+      role: 'provider',
+      createdAt: new Date().toISOString(),
+      bio: data.description,
+      services: [data.category],
+      location: data.city,
+      availability: data.availability.join(', '),
+      hourlyRate: hourlyRateMap[data.priceRange] || 50,
+      rating: 0,
+      reviewCount: 0,
+      verified: false,
+      phone: data.phone,
+      address: `${data.address1}${data.address2 ? ', ' + data.address2 : ''}, ${data.city}, ${data.province} ${data.postalCode}`,
+      coverageZones: data.coverageZones,
+      experienceYears: data.experienceYears ? parseInt(data.experienceYears) : undefined,
+    } as any
+
+    onAuth(newProvider)
+    toast.info('Votre compte prestataire sera disponible après validation par un administrateur')
+    onClose()
+  }
+
   const handleTabChange = (v: string) => {
     if (v === 'signup') {
       if (initialRole === 'provider') {
-        setMode('select-role')
+        setMode('provider-multistep')
         setRole('provider')
       } else {
         setMode('signup')
         setRole('client')
       }
     } else {
-      setMode(v as 'signin' | 'signup')
+      setMode(v as any)
     }
+  }
+
+  if (mode === 'provider-multistep') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border bg-card sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <button 
+                onClick={onClose}
+                className="flex-shrink-0 hover:opacity-80 transition-opacity"
+              >
+                <img src={logo || logoImage} alt="Pro En Poche" className="h-12 w-auto" />
+              </button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 container mx-auto px-4 py-12">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">Inscription Prestataire</h1>
+              <p className="text-muted-foreground">
+                Créez votre profil professionnel en quelques étapes
+              </p>
+            </div>
+
+            <MultiStepProviderForm onSubmit={handleProviderFormSubmit} onBack={handleBackToSignup} />
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
@@ -196,7 +276,7 @@ export function AuthPage({ onAuth, onClose, initialRole, logo }: AuthPageProps) 
             )}
 
             <Tabs 
-              value={mode === 'select-role' ? 'signup' : mode} 
+              value={mode === 'select-role' ? 'signup' : (mode === 'signin' || mode === 'signup' ? mode : 'signup')} 
               onValueChange={handleTabChange}
             >
               <TabsList className="grid w-full grid-cols-2 mb-8">
