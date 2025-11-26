@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { User, UserRole } from '@/lib/types'
-import { DEMO_ACCOUNTS, CANADIAN_CITIES } from '@/lib/demo-data'
+import { CANADIAN_CITIES } from '@/lib/demo-data'
 import { toast } from 'sonner'
 import { UserCircle, Briefcase, ArrowLeft, Key } from '@phosphor-icons/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -50,13 +50,6 @@ export function AuthDialog({ open, onOpenChange, onAuth, initialRole }: AuthDial
     availability: '',
     hourlyRate: '',
   })
-
-  const handleDemoLogin = (accountType: 'superadmin' | 'admin' | 'client' | 'provider') => {
-    const demoUser = DEMO_ACCOUNTS[accountType]
-    onAuth(demoUser as User)
-    toast.success(`Bienvenue ${demoUser.name}!`)
-    onOpenChange(false)
-  }
 
   const handleSubmit = () => {
     if (!formData.email || !formData.password) {
@@ -194,69 +187,6 @@ export function AuthDialog({ open, onOpenChange, onAuth, initialRole }: AuthDial
           </TabsList>
 
           <TabsContent value="signin" className="space-y-4 mt-4">
-            <Card className="p-4 bg-muted/50">
-              <div className="flex items-start gap-2 mb-3">
-                <Key size={20} className="text-primary mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-sm mb-1">Comptes de démonstration</h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Testez la plateforme avec ces comptes pré-configurés
-                  </p>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDemoLogin('superadmin')}
-                  className="justify-start gap-2"
-                >
-                  <UserCircle size={16} />
-                  <div className="text-left">
-                    <div className="font-medium">Super Admin</div>
-                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.superadmin.email}</div>
-                  </div>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDemoLogin('admin')}
-                  className="justify-start gap-2"
-                >
-                  <UserCircle size={16} />
-                  <div className="text-left">
-                    <div className="font-medium">Admin</div>
-                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.admin.email}</div>
-                  </div>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDemoLogin('client')}
-                  className="justify-start gap-2"
-                >
-                  <UserCircle size={16} />
-                  <div className="text-left">
-                    <div className="font-medium">Client</div>
-                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.client.email}</div>
-                  </div>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDemoLogin('provider')}
-                  className="justify-start gap-2"
-                >
-                  <Briefcase size={16} />
-                  <div className="text-left">
-                    <div className="font-medium">Prestataire</div>
-                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.provider.email}</div>
-                  </div>
-                </Button>
-              </div>
-            </Card>
-
-            <Separator />
 
             <div className="space-y-2">
               <Label htmlFor="signin-email">Email</Label>
