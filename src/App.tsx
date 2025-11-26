@@ -15,7 +15,7 @@ import { MagnifyingGlass, User as UserIcon, SignOut, ChartLine } from '@phosphor
 import { ProviderCard } from '@/components/ProviderCard'
 import { FilterPanel, FilterState } from '@/components/FilterPanel'
 import { BookingDialog } from '@/components/BookingDialog'
-import { AuthDialog } from '@/components/AuthDialog'
+import { AuthPage } from '@/components/AuthPage'
 import { ReviewDialog } from '@/components/ReviewDialog'
 import { PaymentDialog } from '@/components/PaymentDialog'
 import { Dashboard } from '@/components/Dashboard'
@@ -64,6 +64,7 @@ function App() {
 
   const [authOpen, setAuthOpen] = useState(false)
   const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
+  const [showAuthPage, setShowAuthPage] = useState(false)
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false)
@@ -117,7 +118,7 @@ function App() {
     if (!currentUser) {
       toast.error('Veuillez vous connecter pour réserver un service')
       setAuthInitialRole(undefined)
-      setAuthOpen(true)
+      setShowAuthPage(true)
       return
     }
     setSelectedProvider(provider)
@@ -127,7 +128,7 @@ function App() {
   const handleBuyPlan = (planName: string) => {
     if (!currentUser) {
       setAuthInitialRole('provider')
-      setAuthOpen(true)
+      setShowAuthPage(true)
       toast.info('Créez votre compte prestataire pour accéder aux plans')
     } else if (currentUser.role !== 'provider') {
       toast.error('Seuls les prestataires peuvent souscrire à un plan')
@@ -403,7 +404,16 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
+      {showAuthPage ? (
+        <AuthPage
+          onAuth={handleAuth}
+          onClose={() => setShowAuthPage(false)}
+          initialRole={authInitialRole}
+          logo={siteSettings?.logo}
+        />
+      ) : (
+        <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-8">
@@ -483,7 +493,7 @@ function App() {
               ) : (
                 <Button onClick={() => {
                   setAuthInitialRole(undefined)
-                  setAuthOpen(true)
+                  setShowAuthPage(true)
                 }} className="gap-2">
                   <UserIcon size={18} />
                   Connexion
@@ -623,13 +633,6 @@ function App() {
         </>
       ) : null}
 
-      <AuthDialog 
-        open={authOpen} 
-        onOpenChange={setAuthOpen} 
-        onAuth={handleAuth} 
-        initialRole={authInitialRole}
-      />
-      
       <BookingDialog
         open={bookingDialogOpen}
         onOpenChange={setBookingDialogOpen}
@@ -673,7 +676,9 @@ function App() {
       <Footer onNavigate={handleFooterNavigate} />
 
       <Toaster />
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 
