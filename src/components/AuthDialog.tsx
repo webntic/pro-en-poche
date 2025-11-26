@@ -51,7 +51,7 @@ export function AuthDialog({ open, onOpenChange, onAuth, initialRole }: AuthDial
     hourlyRate: '',
   })
 
-  const handleDemoLogin = (accountType: 'admin' | 'client' | 'provider') => {
+  const handleDemoLogin = (accountType: 'superadmin' | 'admin' | 'client' | 'provider') => {
     const demoUser = DEMO_ACCOUNTS[accountType]
     onAuth(demoUser as User)
     toast.success(`Bienvenue ${demoUser.name}!`)
@@ -205,6 +205,18 @@ export function AuthDialog({ open, onOpenChange, onAuth, initialRole }: AuthDial
                 </div>
               </div>
               <div className="grid gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDemoLogin('superadmin')}
+                  className="justify-start gap-2"
+                >
+                  <UserCircle size={16} />
+                  <div className="text-left">
+                    <div className="font-medium">Super Admin</div>
+                    <div className="text-xs text-muted-foreground">{DEMO_ACCOUNTS.superadmin.email}</div>
+                  </div>
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

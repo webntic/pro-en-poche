@@ -61,6 +61,13 @@ A professional services marketplace connecting service providers with clients th
 - **Progression**: Login as admin → Dashboard overview (stats: total clients, providers, bookings, revenue) → Navigate tabs (Providers/Clients/Bookings/Reviews) → Review pending provider applications → Approve/Reject providers → View all platform activity → Manage users (delete accounts if needed)
 - **Success criteria**: All users/bookings/payments/reviews visible and searchable, pending providers clearly highlighted, approve/reject actions take effect immediately, deleted users removed from system, platform statistics accurate and updated
 
+### Super Admin Dashboard
+- **Functionality**: Advanced settings management for logo customization, SMTP email configuration, and Stripe payment integration
+- **Purpose**: Provides platform owner complete control over site branding, email notifications, and payment processing configuration
+- **Trigger**: Super admin user login
+- **Progression**: Login as super admin → Access settings dashboard → Navigate tabs (Logo/SMTP/Stripe) → Upload new logo image (max 5MB, PNG/JPG/SVG) → Configure SMTP server (host, port, credentials, sender info) → Set Stripe API keys (publishable, secret, webhook) → Save configurations → Settings applied site-wide
+- **Success criteria**: Logo updates display immediately across all pages, SMTP settings stored securely for email sending, Stripe keys validated and ready for payment processing, all configurations persist across sessions, form validation prevents invalid entries
+
 ### Provider Verification System
 - **Functionality**: Admin approval required before new provider accounts become active on the platform
 - **Purpose**: Maintains platform quality and trust by vetting service providers before they can offer services
@@ -87,6 +94,10 @@ A professional services marketplace connecting service providers with clients th
 - **Duplicate announcements**: System allows multiple announcements per provider for different service offerings
 - **Pending provider access**: Providers awaiting approval see notification explaining verification process, cannot create announcements or appear in marketplace until approved
 - **Admin user management**: Admin can delete user accounts (clients/providers), all associated data (bookings, reviews) handled appropriately, warnings before destructive actions
+- **Super admin restrictions**: Only super admin role can access site settings, regular admins cannot modify logo/SMTP/Stripe configurations
+- **File upload validation**: Logo uploads restricted to 5MB max, image formats only (PNG, JPG, SVG, WebP), invalid files rejected with clear error
+- **Sensitive data**: SMTP passwords and Stripe secret keys displayed as password fields, values stored securely, never logged or exposed in client-side code
+- **Configuration changes**: Settings updates require explicit save action, unsaved changes can be cancelled, confirmation on successful save
 
 ## Design Direction
 

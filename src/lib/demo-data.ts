@@ -1,6 +1,13 @@
 import { User, ServiceProvider } from './types'
 
 export const DEMO_ACCOUNTS = {
+  superadmin: {
+    id: 'demo-superadmin',
+    email: 'superadmin@proenpoche.ca',
+    name: 'Super Administrateur',
+    role: 'superadmin' as const,
+    createdAt: '2024-01-01T00:00:00Z',
+  },
   admin: {
     id: 'demo-admin',
     email: 'admin@proenpoche.ca',

@@ -1,4 +1,4 @@
-export type UserRole = 'client' | 'provider' | 'admin'
+export type UserRole = 'client' | 'provider' | 'admin' | 'superadmin'
 
 export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'disputed'
 
@@ -81,5 +81,23 @@ export interface Announcement {
   services: string[]
   isActive: boolean
   createdAt: string
+  updatedAt: string
+}
+
+export interface SiteSettings {
+  logo?: string
+  smtp: {
+    host: string
+    port: number
+    username: string
+    password: string
+    fromEmail: string
+    fromName: string
+  }
+  stripe: {
+    publishableKey: string
+    secretKey: string
+    webhookSecret: string
+  }
   updatedAt: string
 }

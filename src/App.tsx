@@ -20,6 +20,7 @@ import { ReviewDialog } from '@/components/ReviewDialog'
 import { Dashboard } from '@/components/Dashboard'
 import { ProviderDashboard } from '@/components/ProviderDashboard'
 import { AdminDashboard } from '@/components/AdminDashboard'
+import { SuperAdminDashboard } from '@/components/SuperAdminDashboard'
 import { AnnouncementDialog } from '@/components/AnnouncementDialog'
 import { HeroSlider } from '@/components/HeroSlider'
 import { Logo } from '@/components/Logo'
@@ -31,7 +32,7 @@ import { BecomeProviderSection } from '@/components/BecomeProviderSection'
 import { WhyChooseUsSection } from '@/components/WhyChooseUsSection'
 import { FAQSection } from '@/components/FAQSection'
 import { Footer } from '@/components/Footer'
-import { User, ServiceProvider, Booking, Review, Announcement } from '@/lib/types'
+import { User, ServiceProvider, Booking, Review, Announcement, SiteSettings } from '@/lib/types'
 import { DEMO_PROVIDERS } from '@/lib/demo-data'
 import { toast } from 'sonner'
 import logoImage from '@/assets/images/logo.svg'
@@ -43,6 +44,22 @@ function App() {
   const [bookings, setBookings] = useKV<Booking[]>('bookings', [])
   const [reviews, setReviews] = useKV<Review[]>('reviews', [])
   const [announcements, setAnnouncements] = useKV<Announcement[]>('announcements', [])
+  const [siteSettings, setSiteSettings] = useKV<SiteSettings>('site-settings', {
+    smtp: {
+      host: '',
+      port: 587,
+      username: '',
+      password: '',
+      fromEmail: '',
+      fromName: 'Pro En Poche',
+    },
+    stripe: {
+      publishableKey: '',
+      secretKey: '',
+      webhookSecret: '',
+    },
+    updatedAt: new Date().toISOString(),
+  })
 
   const [authOpen, setAuthOpen] = useState(false)
   const [authInitialRole, setAuthInitialRole] = useState<'client' | 'provider' | undefined>(undefined)
@@ -310,7 +327,12 @@ function App() {
 
   const isProvider = currentUser?.role === 'provider'
   const isAdmin = currentUser?.role === 'admin'
+  const isSuperAdmin = currentUser?.role === 'superadmin'
   const allUsers = [...(users || []), ...(providers || [])]
+
+  const handleUpdateSettings = (newSettings: SiteSettings) => {
+    setSiteSettings(newSettings)
+  }
 
   const handleFooterNavigate = (section: 'contact' | 'faq') => {
     setShowDashboard(false)
@@ -330,7 +352,7 @@ function App() {
               }}
               className="flex-shrink-0 hover:opacity-80 transition-opacity"
             >
-              <img src={logoImage} alt="Pro En Poche" className="h-12 w-auto" />
+              <img src={siteSettings?.logo || logoImage} alt="Pro En Poche" className="h-12 w-auto" />
             </button>
 
             <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
@@ -413,7 +435,12 @@ function App() {
 
       {showDashboard && currentUser ? (
         <main className="container mx-auto px-4 py-8">
-          {isAdmin ? (
+          {isSuperAdmin && siteSettings ? (
+            <SuperAdminDashboard
+              settings={siteSettings}
+              onUpdateSettings={handleUpdateSettings}
+            />
+          ) : isAdmin ? (
             <AdminDashboard
               users={allUsers}
               providers={providers || []}
